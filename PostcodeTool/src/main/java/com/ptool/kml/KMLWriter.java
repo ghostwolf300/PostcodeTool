@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.jdom2.Document;
+import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
 public class KMLWriter {
@@ -24,7 +25,7 @@ public class KMLWriter {
 	
 	public void write(Document doc,String fileName) {
 		File file=new File(fileName);
-        XMLOutputter outputter = new XMLOutputter();
+        XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
         FileWriter writer=null;
 		try {
 			writer = new FileWriter(file);
