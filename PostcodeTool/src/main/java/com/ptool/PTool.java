@@ -84,6 +84,10 @@ public class PTool {
 			
 			String text="alue : "+geo.getProperty("posti_alue")+"\t";
 			
+			if(geo.getProperty("posti_alue").equals("32250")) {
+				System.out.println("virheellinen");
+			}
+			
 			if(geo.getType()==GeometryObject.Type.GeometryCollection) {
 				text+="tyyppi: GeometryCollection";
 				GeometryCollection geoColl=(GeometryCollection) geo;

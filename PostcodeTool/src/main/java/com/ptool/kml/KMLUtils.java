@@ -30,29 +30,34 @@ public class KMLUtils {
 		
 		Document doc=new Document();
 		
-		Element root=new Element("kml");
+		Namespace xmlns=Namespace.getNamespace("http://www.opengis.net/kml/2.2");
 		Namespace gx=Namespace.getNamespace("gx", "http://www.google.com/kml/ext/2.2");
 		Namespace kml=Namespace.getNamespace("kml", "http://www.opengis.net/kml/2.2");
 		Namespace atom=Namespace.getNamespace("atom", "http://www.w3.org/2005/Atom");
+		
+		Element root=new Element("kml",xmlns);
 		
 		root.addNamespaceDeclaration(gx);
 		root.addNamespaceDeclaration(kml);
 		root.addNamespaceDeclaration(atom);
 		
-		root.addContent(getStyleNormal());
-		root.addContent(getStyleHighlight());
-		root.addContent(getStyleMap());
+		Element eDoc=new Element("Document");
+		
+		eDoc.addContent(getStyleNormal());
+		eDoc.addContent(getStyleHighlight());
+		eDoc.addContent(getStyleMap());
 		
 		Element folder=new Element("Folder");
 		Element folderName=new Element("name");
 		folderName.setText("Postinumerot");
 		folder.addContent(folderName);
-		root.addContent(folder);
+		eDoc.addContent(folder);
 		
 		for(GeometryObject geo : geoObjects) {
 			folder.addContent(getPostcodeArea(geo));
 		}
 		
+		root.addContent(eDoc);
 		doc.setRootElement(root);
 		
 		return doc;
@@ -79,7 +84,7 @@ public class KMLUtils {
 		tessellate.setText("1");
 		polygon.addContent(tessellate);
 		
-		Element outerBoundaryIs=new Element("outerBoundaryId");
+		Element outerBoundaryIs=new Element("outerBoundaryIs");
 		Element linearRing=new Element("LinearRing");
 		outerBoundaryIs.addContent(linearRing);
 		
@@ -120,6 +125,7 @@ public class KMLUtils {
 		Element style=new Element("Style");
 		style.setAttribute("id", "s_ylw-pushpin_hl");
 		style.addContent(getIconStyle(1.3));
+		style.addContent(getLineStyle(2.0,"ff0000ff"));
 		style.addContent(getPolyStyle("bf0000ff"));
 		return style;
 	}
@@ -127,8 +133,9 @@ public class KMLUtils {
 	private Element getStyleNormal() {
 		Element style=new Element("Style");
 		style.setAttribute("id", "s_ylw-pushpin");
-		style.addContent(getIconStyle(1.3));
-		style.addContent(getPolyStyle("bf0000ff"));
+		style.addContent(getIconStyle(1.1));
+		style.addContent(getLineStyle(2.0,"ff0000ff"));
+		style.addContent(getPolyStyle("9900ffff"));
 		return style;
 	}
 	
@@ -161,6 +168,17 @@ public class KMLUtils {
 		eColor.setText(color);
 		polyStyle.addContent(eColor);
 		return polyStyle;
+	}
+	
+	private Element getLineStyle(double width,String color) {
+		Element lineStyle=new Element("LineStyle");
+		Element eColor=new Element("color");
+		eColor.setText(color);
+		Element eWidth=new Element("width");
+		eWidth.setText(Double.toString(width));
+		lineStyle.addContent(eColor);
+		lineStyle.addContent(eWidth);
+		return lineStyle;
 	}
 	
 }
