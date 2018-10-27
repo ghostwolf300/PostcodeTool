@@ -106,11 +106,10 @@ public class PTool {
 			}
 			
 			System.out.println(text);
-			
-			Document doc=KMLUtils.getInstance().buildKML(geoObjList);
-			KMLWriter.getInstance().write(doc, "testi.kml");
-			
 		}
+		
+		Document doc=KMLUtils.getInstance().buildKML(geoObjList);
+		KMLWriter.getInstance().write(doc, "testi.kml");
 	}
 	
 	public void addCoordinates(Arc arc) {
@@ -128,6 +127,7 @@ public class PTool {
 				x=(Double) jsonPos.get(0);
 				y=(Double) jsonPos.get(1);
 				Position p=new Position(x,y);
+				
 				arc.addPosition(p);
 			}
 		}

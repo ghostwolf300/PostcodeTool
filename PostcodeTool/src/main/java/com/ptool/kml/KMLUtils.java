@@ -59,7 +59,9 @@ public class KMLUtils {
 		Element areaName=new Element("name");
 		areaName.setText((String) geo.getProperty("posti_alue"));
 		area.addContent(areaName);
-		//getPolygon
+		if(geo.getType()==GeometryObject.Type.Polygon) {
+			area.addContent(getPolygon((Polygon)geo));
+		}
 		return area;
 	}
 	
@@ -78,7 +80,7 @@ public class KMLUtils {
 		String coordTxt=new String();
 		for(Arc arc : p.getArcs()) {
 			for(Position pos : arc.getPositions()) {
-				coordTxt+=pos.getX()+","+pos.getY()+" ";
+				coordTxt+=pos.getX()+","+pos.getY()+",0 ";
 			}
 		}
 		coordinates.setText(coordTxt);
