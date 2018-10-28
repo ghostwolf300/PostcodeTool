@@ -7,6 +7,7 @@ import org.jdom2.Element;
 import org.jdom2.Namespace;
 
 import com.ptool.geo.Arc;
+import com.ptool.geo.GeometryCollection;
 import com.ptool.geo.GeometryObject;
 import com.ptool.geo.Polygon;
 import com.ptool.geo.Position;
@@ -64,17 +65,44 @@ public class KMLUtils {
 	}
 	
 	private Element getPostcodeArea(GeometryObject geo) {
-		Element area=new Element("Placemark");
-		Element areaName=new Element("name");
-		areaName.setText((String) geo.getProperty("posti_alue"));
-		area.addContent(areaName);
-		Element styleUrl=new Element("styleUrl");
-		styleUrl.setText("#m_ylw-pushpin");
-		area.addContent(styleUrl);
+		Element area=null;
 		if(geo.getType()==GeometryObject.Type.Polygon) {
-			area.addContent(getPolygon((Polygon)geo));
+			Polygon p=(Polygon)geo;
+			area=getPlacemark(p,(String)p.getProperty("posti_alue"));
+		}
+		else if(geo.getType()==GeometryObject.Type.GeometryCollection) {
+			GeometryCollection geoColl=(GeometryCollection)geo;
+			area=getPolygonFolder(geoColl);
+		}
+		else {
+			//Unknown type
 		}
 		return area;
+	}
+	
+	private Element getPlacemark(Polygon p,String name) {
+		Element placeMark=new Element("Placemark");
+		Element areaName=new Element("name");
+		areaName.setText(name);
+		placeMark.addContent(areaName);
+		Element styleUrl=new Element("styleUrl");
+		styleUrl.setText("#m_ylw-pushpin");
+		placeMark.addContent(styleUrl);
+		placeMark.addContent(getPolygon(p));
+		return placeMark;
+	}
+	
+	private Element getPolygonFolder(GeometryCollection geoColl) {
+		Element folder=new Element("Folder");
+		Element folderName=new Element("name");
+		folderName.setText((String) geoColl.getProperty("posti_alue"));
+		folder.addContent(folderName);
+		for(GeometryObject geo : geoColl.getGeometries()) {
+			if(geo.getType()==GeometryObject.Type.Polygon) {
+				folder.addContent(getPlacemark((Polygon)geo,folderName.getText()));
+			}
+		}
+		return folder;
 	}
 	
 	private Element getPolygon(Polygon p) {

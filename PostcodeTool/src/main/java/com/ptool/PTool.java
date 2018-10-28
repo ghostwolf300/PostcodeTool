@@ -70,6 +70,16 @@ public class PTool {
 		for(Object o : areas) {
 			JSONObject json=(JSONObject)o;
 			String type=(String)json.get("type");
+			//JSONObject prop=(JSONObject) json.get("properties");
+			//String areaCode=(String) prop.get("posti_alue");
+			/*if(areaCode.equals("90480") || areaCode.equals("32250") || areaCode.equals("22840")) {
+				if(type.equals("GeometryCollection")) {
+					geoObjList.add(GeometryCollection.createGeometryCollection(json));
+				}
+				else if(type.equals("Polygon")) {
+					geoObjList.add(Polygon.createPolygon(json));
+				}
+			}*/
 			if(type.equals("GeometryCollection")) {
 				geoObjList.add(GeometryCollection.createGeometryCollection(json));
 			}
@@ -131,13 +141,11 @@ public class PTool {
 				x=(Double) jsonPos.get(0);
 				y=(Double) jsonPos.get(1);
 				Position p=new Position(x,y);
-				
 				arc.addPosition(p);
 			}
 		}
 		else {
-			//System.out.println(arc.getIndex()+"\tReverse coordinates!");
-			index=-1*index;
+			index=~index;
 			jsonPositions=(JSONArray) jsonArcs.get(index);
 			int lastIndex=jsonPositions.size()-1;
 			for(int i=lastIndex;i>=0;i--) {
@@ -149,8 +157,6 @@ public class PTool {
 				arc.addPosition(p);
 			}
 		}
-		
-		
 		
 	}
 
