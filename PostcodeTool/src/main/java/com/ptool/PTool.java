@@ -39,7 +39,25 @@ public class PTool {
 	}
 	
 	public void convertCSVToKML() {
-		MyCSVReader.getInstance().readPostcodeFile("postinumerot 20150102.csv");
+		List<String[]> postcodes=MyCSVReader.getInstance().readPostcodeFile("postinumerot 20150102.csv");
+		KMLUtils kmlUtil=KMLUtils.getInstance();
+		kmlUtil.createKMLDocument("Postinumerot");
+		
+		int i=0;
+		int fileNumber=1;
+		for(String[] pc : postcodes) {
+			if(i==1000) {
+				KMLWriter.getInstance().write(kmlUtil.getKmlDoc(), "from_csv_"+fileNumber+".kml");
+				kmlUtil.createKMLDocument("Postinumerot");
+				fileNumber++;
+				i=0;
+			}
+			if(!pc[2].isEmpty()) {
+				kmlUtil.addPostcode(pc[1], pc[2]);
+			}
+			i++;
+		}
+		KMLWriter.getInstance().write(kmlUtil.getKmlDoc(), "from_csv_"+fileNumber+".kml");
 	}
 	
 	

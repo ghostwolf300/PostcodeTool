@@ -99,6 +99,18 @@ public class KMLUtils {
 		return placeMark;
 	}
 	
+	private Element getPlacemark(Element polygon,String name) {
+		Element placeMark=new Element("Placemark");
+		Element areaName=new Element("name");
+		areaName.setText(name);
+		placeMark.addContent(areaName);
+		Element styleUrl=new Element("styleUrl");
+		styleUrl.setText("#m_ylw-pushpin");
+		placeMark.addContent(styleUrl);
+		placeMark.addContent(polygon);
+		return placeMark;
+	}
+	
 	private Element getPolygonFolder(GeometryCollection geoColl) {
 		Element folder=new Element("Folder");
 		Element folderName=new Element("name");
@@ -237,11 +249,11 @@ public class KMLUtils {
 		eDoc.addContent(getStyleHighlight());
 		eDoc.addContent(getStyleMap());
 		
-		Element folder=new Element("Folder");
+		/*Element folder=new Element("Folder");
 		Element folderName=new Element("name");
-		folderName.setText("Postinumerot");
+		folderName.setText(name);
 		folder.addContent(folderName);
-		eDoc.addContent(folder);
+		eDoc.addContent(folder);*/
 		
 		root.addContent(eDoc);
 		kmlDoc.setRootElement(root);
@@ -275,9 +287,11 @@ public class KMLUtils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Element polygon=xmlSnip.getRootElement();
-		Element folder=kmlDoc.getRootElement().getChild("Folder");
-		folder.addContent(polygon);
+		System.out.println(postcode);
+		Element polygon=xmlSnip.getRootElement().clone();
+		//Element folder=kmlDoc.getRootElement().getChild("Document").getChild("Folder");
+		Element folder=kmlDoc.getRootElement().getChild("Document");
+		folder.addContent(getPlacemark(polygon,postcode));
 		
 	}
 	
