@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.ptool.csv.MyCSVReader;
 import com.ptool.geo.Arc;
 import com.ptool.geo.GeometryCollection;
 import com.ptool.geo.GeometryObject;
@@ -32,9 +33,15 @@ public class PTool {
 	public static void main(String[] args) {
 		
 		PTool tool=new PTool();
-		tool.readTopoJson();
+		//tool.readTopoJson();
+		tool.convertCSVToKML();
 
 	}
+	
+	public void convertCSVToKML() {
+		MyCSVReader.getInstance().readPostcodeFile("postinumerot 20150102.csv");
+	}
+	
 	
 	public void readTopoJson() {
 		

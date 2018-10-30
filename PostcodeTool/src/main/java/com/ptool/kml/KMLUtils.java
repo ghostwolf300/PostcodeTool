@@ -1,10 +1,14 @@
 package com.ptool.kml;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
+import org.jdom2.input.SAXBuilder;
 
 import com.ptool.geo.Arc;
 import com.ptool.geo.GeometryCollection;
@@ -15,6 +19,9 @@ import com.ptool.geo.Position;
 public class KMLUtils {
 	
 	private static KMLUtils instance;
+	
+	private Document kmlDoc=null;
+	private SAXBuilder builder=null;
 	
 	private KMLUtils() {
 		
@@ -208,5 +215,71 @@ public class KMLUtils {
 		lineStyle.addContent(eWidth);
 		return lineStyle;
 	}
+	
+	public void createKMLDocument(String name) {
+		
+		kmlDoc=new Document();
+		
+		Namespace xmlns=Namespace.getNamespace("http://www.opengis.net/kml/2.2");
+		Namespace gx=Namespace.getNamespace("gx", "http://www.google.com/kml/ext/2.2");
+		Namespace kml=Namespace.getNamespace("kml", "http://www.opengis.net/kml/2.2");
+		Namespace atom=Namespace.getNamespace("atom", "http://www.w3.org/2005/Atom");
+		
+		Element root=new Element("kml",xmlns);
+		
+		root.addNamespaceDeclaration(gx);
+		root.addNamespaceDeclaration(kml);
+		root.addNamespaceDeclaration(atom);
+		
+		Element eDoc=new Element("Document");
+		
+		eDoc.addContent(getStyleNormal());
+		eDoc.addContent(getStyleHighlight());
+		eDoc.addContent(getStyleMap());
+		
+		Element folder=new Element("Folder");
+		Element folderName=new Element("name");
+		folderName.setText("Postinumerot");
+		folder.addContent(folderName);
+		eDoc.addContent(folder);
+		
+		root.addContent(eDoc);
+		kmlDoc.setRootElement(root);
+		
+	}
+	
+	public Document getKmlDoc() {
+		return kmlDoc;
+	}
+
+	public void setKmlDoc(Document kmlDoc) {
+		this.kmlDoc = kmlDoc;
+	}
+
+	public void addPostcode(String postcode, String xmlString) {
+		
+		Document xmlSnip=null;
+		
+		if(builder==null) {
+			builder=new SAXBuilder();
+		}
+		
+		try {
+			xmlSnip=builder.build(new StringReader(xmlString));
+		} 
+		catch (JDOMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Element polygon=xmlSnip.getRootElement();
+		Element folder=kmlDoc.getRootElement().getChild("Folder");
+		folder.addContent(polygon);
+		
+	}
+	
 	
 }
