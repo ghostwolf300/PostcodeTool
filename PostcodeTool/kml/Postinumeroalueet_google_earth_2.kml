@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Postinumeroalueet</name>
+	<description>2015</description>
+	<StyleMap id="poly-FFFF00-2000-153-nodesc">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#poly-FFFF00-2000-153-nodesc-normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#poly-FFFF00-2000-153-nodesc-highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="poly-FFFF00-2000-153-nodesc-highlight">
+		<BalloonStyle>
+			<text><![CDATA[<h3>$[name]</h3>]]></text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>4000ffff</color>
+		</PolyStyle>
+	</Style>
+	<Style id="poly-FFFF00-2000-153-nodesc-normal">
+		<BalloonStyle>
+			<text><![CDATA[<h3>$[name]</h3>]]></text>
+		</BalloonStyle>
+		<LineStyle>
+			<color>ff00ffff</color>
+			<width>2</width>
+		</LineStyle>
+		<PolyStyle>
+			<color>4000ffff</color>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Folder>
+		<name>from_csv_1.kml</name>
+		<Placemark>
+			<name>00100</name>
+			<styleUrl>#poly-FFFF00-2000-153-nodesc</styleUrl>
+			<Polygon>
+				<outerBoundaryIs>
+					<LinearRing>
+						<tessellate>1</tessellate>
+						<coordinates>
+							24.89738,60.167945,0 24.901328,60.168714,0 24.911799,60.16897,0 24.915361,60.168799,0 24.931498,60.166963,0 24.933,60.166429,0 24.931648,60.166034,0 24.933085,60.165148,0 24.940231,60.16760300000001,0 24.942484,60.16628,0 24.943578,60.16676,0 24.94257,60.167731,0 24.951024,60.16781699999999,0 24.951067,60.16897,0 24.949329,60.16914,0 24.948835,60.172769,0 24.950767,60.174733,0 24.947312,60.17471199999999,0 24.946797,60.17595,0 24.945982,60.176857,0 24.94154,60.178383,0 24.93257,60.178063,0 24.913988,60.176185,0 24.910083,60.176846,0 24.90931,60.177977,0 24.904032,60.177038,0 24.899569,60.176313,0 24.894848,60.17229999999999,0 24.89738,60.167945,0 
+						</coordinates>
+					</LinearRing>
+				</outerBoundaryIs>
+			</Polygon>
+		</Placemark>
+		<Placemark>
+			<name>00120</name>
+			<styleUrl>#poly-FFFF00-2000-153-nodesc</styleUrl>
+			<Polygon>
+				<outerBoundaryIs>
+					<LinearRing>
+						<tessellate>1</tessellate>
+						<coordinates>
+							24.946518,60.161006,0 24.946089,60.164283,0 24.944007,60.16423000000001,0 24.943578,60.16676,0 24.942484,60.16628,0 24.940231,60.16760300000001,0 24.933085,60.165148,0 24.933558,60.164775,0 24.935274,60.163654,0 24.926927,60.160878,0 24.928193,60.15974600000001,0 24.931841,60.160878,0 24.933493,60.160269,0 24.935789,60.161166,0 24.936497,60.160675,0 24.93772,60.160985,0 24.938536,60.160888,0 24.940188,60.161412,0 24.941561,60.160718,0 24.946518,60.161006,0 
+						</coordinates>
+					</LinearRing>
+				</outerBoundaryIs>
+			</Polygon>
+		</Placemark>
+		<Placemark>
+			<name>00130</name>
+			<styleUrl>#poly-FFFF00-2000-153-nodesc</styleUrl>
+			<Polygon>
+				<outerBoundaryIs>
+					<LinearRing>
+						<tessellate>1</tessellate>
+						<coordinates>
+							24.94257,60.167731,0 24.943578,60.16676,0 24.944007,60.16423000000001,0 24.946089,60.164283,0 24.946518,60.161006,0 24.948578,60.161305,0 24.94879200000001,60.160558,0 24.958041,60.162533,0 24.957504,60.163995,0 24.958277,60.164956,0 24.957547,60.1666,0 24.956732,60.16734699999999,0 24.955273,60.167016,0 24.952269,60.16782799999999,0 24.951024,60.16781699999999,0 24.94257,60.167731,0 
+						</coordinates>
+					</LinearRing>
+				</outerBoundaryIs>
+			</Polygon>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>
