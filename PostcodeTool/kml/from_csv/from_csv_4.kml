@@ -10,12 +10,12 @@
         <hotSpot x="20" y="2" xunits="pixels" yunits="pixels" />
       </IconStyle>
       <LineStyle>
-        <color>ff0000ff</color>
+        <color>ff00ffff</color>
         <width>2.0</width>
       </LineStyle>
       <PolyStyle>
-        <color>9900ffff</color>
-      </PolyStyle>
+        <color>4000ffff</color>
+        <fill>0</fill></PolyStyle>
     </Style>
     <Style id="s_ylw-pushpin_hl">
       <IconStyle>
@@ -26,11 +26,11 @@
         <hotSpot x="20" y="2" xunits="pixels" yunits="pixels" />
       </IconStyle>
       <LineStyle>
-        <color>ff0000ff</color>
+        <color>ff00ffff</color>
         <width>2.0</width>
       </LineStyle>
       <PolyStyle>
-        <color>bf0000ff</color>
+        <color>4000ffff</color>
       </PolyStyle>
     </Style>
     <StyleMap id="m_ylw-pushpin">
