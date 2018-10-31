@@ -13,6 +13,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.ptool.csv.MyCSVReader;
+import com.ptool.db.DAOFactory;
+import com.ptool.db.IPostcodeDAO;
 import com.ptool.geo.Arc;
 import com.ptool.geo.GeometryCollection;
 import com.ptool.geo.GeometryObject;
@@ -34,7 +36,8 @@ public class PTool {
 		
 		PTool tool=new PTool();
 		//tool.readTopoJson();
-		tool.convertCSVToKML();
+		//tool.convertCSVToKML();
+		//tool.testDerby();
 
 	}
 	
@@ -182,7 +185,11 @@ public class PTool {
 				arc.addPosition(p);
 			}
 		}
-		
+	}
+	
+	public void testDerby() {
+		IPostcodeDAO dao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
+		dao.createDB();
 	}
 
 }

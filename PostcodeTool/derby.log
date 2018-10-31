@@ -1,0 +1,13 @@
+----------------------------------------------------------------
+Wed Oct 31 18:25:15 EET 2018:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0166-caf1-7c11-00000704bdb8 
+on database directory C:\Users\ghost\git\PostcodeTool\PostcodeTool\PostcodeDB with class loader sun.misc.Launcher$AppClassLoader@2a139a55 
+Loaded from file:/C:/Users/ghost/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_101-b13
+user.dir=C:\Users\ghost\git\PostcodeTool\PostcodeTool
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=null
+Database Class Loader started - derby.database.classpath=''
