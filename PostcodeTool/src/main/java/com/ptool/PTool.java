@@ -21,8 +21,11 @@ import com.ptool.geo.GeometryObject;
 import com.ptool.geo.Polygon;
 import com.ptool.geo.Position;
 import com.ptool.geo.Topology;
+import com.ptool.json.JSONUtil;
 import com.ptool.kml.KMLUtils;
 import com.ptool.kml.KMLWriter;
+import com.ptool.net.NetUtil;
+import com.ptool.pojo.Postcode;
 
 public class PTool {
 	
@@ -35,9 +38,11 @@ public class PTool {
 	public static void main(String[] args) {
 		
 		PTool tool=new PTool();
+		tool.fetchPostcodeAreas();
 		//tool.readTopoJson();
 		//tool.convertCSVToKML();
 		//tool.testDerby();
+		
 
 	}
 	
@@ -191,5 +196,14 @@ public class PTool {
 		IPostcodeDAO dao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
 		dao.createDB();
 	}
+	
+	public void fetchPostcodeAreas() {
+		//JSONObject json=NetUtil.getInstance().getPostcodeJSON();
+		JSONObject json=JSONUtil.getInstance().readFromFile("pno_net_test.json");
+		//JSONUtil.getInstance().writeToFile(json, "pno_net_test.json");
+		List<Postcode> postcodes=JSONUtil.getInstance().convert(json);
+	}
+	
+	
 
 }
