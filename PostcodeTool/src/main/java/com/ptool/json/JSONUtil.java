@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -11,7 +12,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.ptool.pojo.Coordinates;
+import com.ptool.pojo.Polygon;
 import com.ptool.pojo.Postcode;
+import com.ptool.pojo.Ring;
 
 public class JSONUtil {
 	
@@ -29,12 +33,12 @@ public class JSONUtil {
 	}
 	
 	public List<Postcode> convert(JSONObject json){
-		List<Postcode> postcodes=null;
+		List<Postcode> postcodes=new ArrayList<Postcode>();
 		JSONArray postcodeArray=(JSONArray) json.get("features");
+		
 		for(Object obj : postcodeArray) {
 			JSONObject pc=(JSONObject) obj;
-			JSONObject prop=(JSONObject) pc.get("properties");
-			System.out.println(prop.get("posti_alue")+"\t"+prop.get("nimi"));
+			postcodes.add(toPostcode(pc));
 		}
 		
 		return postcodes;
@@ -90,6 +94,77 @@ public class JSONUtil {
 		}
 		
 		return json;
+	}
+	
+	private Postcode toPostcode(JSONObject json) {
+		JSONObject prop=(JSONObject) json.get("properties");
+		Postcode postcode=new Postcode();
+		postcode.setPostcode((String)prop.get("posti_alue"));
+		postcode.setName((String)prop.get("nimi"));
+		JSONObject jsonGeom=(JSONObject) json.get("geometry");
+		JSONArray jsonCoordinates=(JSONArray) jsonGeom.get("coordinates");
+		
+		for(Object o : jsonCoordinates) {
+			JSONArray jsonPolygon=(JSONArray) o;
+			postcode.addPolygon(toPolygon(jsonPolygon));
+		}
+		
+		return postcode;
+	}
+	
+	private Polygon toPolygon(JSONArray jsonPolygon) {
+		Polygon polygon=new Polygon();
+		JSONArray jsonOuterRing=(JSONArray)jsonPolygon.get(0);
+		Ring outerRing=toRing(jsonOuterRing);
+		outerRing.setRingType(Ring.TYPE_OUTER);
+		polygon.addRing(outerRing);
+		
+		Ring innerRing=null;
+		for(int i=1;i<jsonPolygon.size();i++) {
+			JSONArray jsonRing=(JSONArray)jsonPolygon.get(i);
+			innerRing=toRing(jsonRing);
+			innerRing.setRingType(Ring.TYPE_INNER);
+			polygon.addRing(innerRing);
+		}
+		return polygon;
+	}
+	
+	private Ring toRing(JSONArray jsonRing) {
+		Ring ring=new Ring();
+		JSONArray jsonCoordinates=null;
+		Coordinates coordinates=null;
+		for(int i=0;i<jsonRing.size();i++) {
+			jsonCoordinates=(JSONArray)jsonRing.get(i);
+			coordinates=new Coordinates();
+			coordinates.setOrderNum(i);
+			
+			//System.out.println(jsonCoordinates.get(0)+"\t"+jsonCoordinates.get(1));
+			
+			Object objX=jsonCoordinates.get(0);
+			if(objX instanceof Double) {
+				coordinates.setX((Double)objX);
+			}
+			else if(objX instanceof Long) {
+				coordinates.setX(((Long)objX).doubleValue());
+			}
+			else {
+				//unknown
+			}
+ 			
+			Object objY=jsonCoordinates.get(1);
+			if(objY instanceof Double) {
+				coordinates.setY((Double)objY);
+			}
+			else if(objY instanceof Long) {
+				coordinates.setY(((Long)objY).doubleValue());
+			}
+			else {
+				//unknown
+			}
+			ring.addCoordinates(coordinates);
+			
+		}
+		return ring;
 	}
 	
 }

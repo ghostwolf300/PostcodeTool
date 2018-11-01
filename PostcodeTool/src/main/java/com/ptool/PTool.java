@@ -22,7 +22,7 @@ import com.ptool.geo.Polygon;
 import com.ptool.geo.Position;
 import com.ptool.geo.Topology;
 import com.ptool.json.JSONUtil;
-import com.ptool.kml.KMLUtils;
+import com.ptool.kml.KMLUtil;
 import com.ptool.kml.KMLWriter;
 import com.ptool.net.NetUtil;
 import com.ptool.pojo.Postcode;
@@ -38,7 +38,8 @@ public class PTool {
 	public static void main(String[] args) {
 		
 		PTool tool=new PTool();
-		tool.fetchPostcodeAreas();
+		//tool.fetchPostcodeAreas();
+		tool.test();
 		//tool.readTopoJson();
 		//tool.convertCSVToKML();
 		//tool.testDerby();
@@ -48,7 +49,7 @@ public class PTool {
 	
 	public void convertCSVToKML() {
 		List<String[]> postcodes=MyCSVReader.getInstance().readPostcodeFile("postinumerot 20150102.csv");
-		KMLUtils kmlUtil=KMLUtils.getInstance();
+		KMLUtil kmlUtil=KMLUtil.getInstance();
 		kmlUtil.createKMLDocument("Postinumerot");
 		
 		int i=0;
@@ -69,7 +70,7 @@ public class PTool {
 	}
 	
 	
-	public void readTopoJson() {
+	/*public void readTopoJson() {
 		
 		JSONParser parser=new JSONParser();
 		JSONObject jsonObj=null;
@@ -105,14 +106,14 @@ public class PTool {
 			String type=(String)json.get("type");
 			//JSONObject prop=(JSONObject) json.get("properties");
 			//String areaCode=(String) prop.get("posti_alue");
-			/*if(areaCode.equals("90480") || areaCode.equals("32250") || areaCode.equals("22840")) {
+			if(areaCode.equals("90480") || areaCode.equals("32250") || areaCode.equals("22840")) {
 				if(type.equals("GeometryCollection")) {
 					geoObjList.add(GeometryCollection.createGeometryCollection(json));
 				}
 				else if(type.equals("Polygon")) {
 					geoObjList.add(Polygon.createPolygon(json));
 				}
-			}*/
+			}
 			if(type.equals("GeometryCollection")) {
 				geoObjList.add(GeometryCollection.createGeometryCollection(json));
 			}
@@ -155,9 +156,9 @@ public class PTool {
 			System.out.println(text);
 		}
 		
-		Document doc=KMLUtils.getInstance().buildKML(geoObjList);
+		Document doc=KMLUtil.getInstance().buildKML(geoObjList);
 		KMLWriter.getInstance().write(doc, "testi.kml");
-	}
+	}*/
 	
 	public void addCoordinates(Arc arc) {
 		int index=(int)arc.getIndex();
@@ -199,9 +200,35 @@ public class PTool {
 	
 	public void fetchPostcodeAreas() {
 		//JSONObject json=NetUtil.getInstance().getPostcodeJSON();
-		JSONObject json=JSONUtil.getInstance().readFromFile("pno_net_test.json");
-		//JSONUtil.getInstance().writeToFile(json, "pno_net_test.json");
+		
+		//JSONUtil.getInstance().writeToFile(json, "pno_net_test_new.json");
+		
+		JSONObject json=JSONUtil.getInstance().readFromFile("pno_net_test_new.json");
 		List<Postcode> postcodes=JSONUtil.getInstance().convert(json);
+		
+		IPostcodeDAO dao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
+		
+		for(Postcode pc : postcodes) {
+			System.out.println(pc.toString());
+		}
+		dao.clearTables();
+		dao.savePostcodes(postcodes);
+		
+	}
+	
+	public void test() {
+		IPostcodeDAO dao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
+		//Postcode p=dao.getPostcode("41325");
+		//System.out.println(p.getPostcode()+"\t"+p.getName());
+		List<Postcode> postcodes=dao.getAllPostcodes();
+		KMLUtil util=KMLUtil.getInstance();
+		util.createKMLDocument("my test");
+		for(Postcode pc : postcodes) {
+			util.addPostcode(pc);
+		}
+		KMLWriter.getInstance().write(util.getKmlDoc(),"from_my_db_2.kml");
+		
+		
 	}
 	
 	

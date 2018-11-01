@@ -1,5 +1,6 @@
 package com.ptool.pojo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Polygon {
@@ -25,6 +26,13 @@ public class Polygon {
 
 	public void setRings(List<Ring> rings) {
 		this.rings = rings;
+	}
+	
+	public void addRing(Ring ring) {
+		if(rings==null) {
+			rings=new ArrayList<Ring>();
+		}
+		rings.add(ring);
 	}
 	
 	

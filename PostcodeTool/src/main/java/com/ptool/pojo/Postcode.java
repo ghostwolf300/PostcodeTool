@@ -1,5 +1,6 @@
 package com.ptool.pojo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Postcode {
@@ -39,6 +40,18 @@ public class Postcode {
 
 	public void setPolygons(List<Polygon> polygons) {
 		this.polygons = polygons;
+	}
+	
+	public void addPolygon(Polygon polygon) {
+		if(polygons==null) {
+			polygons=new ArrayList<Polygon>();
+		}
+		polygons.add(polygon);
+	}
+
+	@Override
+	public String toString() {
+		return "Postcode [postcode=" + postcode + ", name=" + name + "]";
 	}
 	
 }

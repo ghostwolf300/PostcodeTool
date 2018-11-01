@@ -1,5 +1,6 @@
 package com.ptool.pojo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Ring {
@@ -46,6 +47,13 @@ public class Ring {
 
 	public void setCoordinates(List<Coordinates> coordinates) {
 		this.coordinates = coordinates;
+	}
+	
+	public void addCoordinates(Coordinates c) {
+		if(coordinates==null) {
+			coordinates=new ArrayList<Coordinates>();
+		}
+		coordinates.add(c);
 	}
 	
 }

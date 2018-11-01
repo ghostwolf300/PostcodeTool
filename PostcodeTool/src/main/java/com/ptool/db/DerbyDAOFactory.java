@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DerbyDAOFactory extends DAOFactory {
 	
 	public static final String DRIVER="org.apache.derby.jdbc.EmbeddedDriver";
-	public static final String DB_URL="PostcodeDB";
+	public static final String DB_URL="C:/Users/ghost/git/PostcodeTool/PostcodeTool/PostcodeDB";
 	
 	
 	public DerbyDAOFactory() {
