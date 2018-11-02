@@ -18,7 +18,7 @@ import com.ptool.geo.Position;
 import com.ptool.pojo.Postcode;
 import com.ptool.pojo.Ring;
 import com.ptool.pojo.Coordinates;
-import com.ptool.pojo.Polygon;
+import com.ptool.pojo.PolygonTO;
 
 public class KMLUtil {
 	
@@ -115,7 +115,7 @@ public class KMLUtil {
 		return placeMark;
 	}
 	
-	private Element getPlacemarkElement(String name,Polygon polygon) {
+	private Element getPlacemarkElement(String name,PolygonTO polygon) {
 		Element placeMark=new Element("Placemark");
 		Element areaName=new Element("name");
 		areaName.setText(name);
@@ -127,7 +127,7 @@ public class KMLUtil {
 		return placeMark;
 	}
 	
-	private Element getPolygonElement(Polygon polygon) {
+	private Element getPolygonElement(PolygonTO polygon) {
 		Element ePoly=new Element("Polygon");
 		
 		Element tessellate=new Element("tessellate");
@@ -339,7 +339,7 @@ public class KMLUtil {
 	
 	public void addPostcode(Postcode postcode) {
 		Element folder=kmlDoc.getRootElement().getChild("Document");
-		for(Polygon polygon : postcode.getPolygons()) {
+		for(PolygonTO polygon : postcode.getPolygons()) {
 			folder.addContent(getPlacemarkElement(postcode.getName(),polygon));
 		}
 		

@@ -13,7 +13,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.ptool.pojo.Coordinates;
-import com.ptool.pojo.Polygon;
+import com.ptool.pojo.PolygonTO;
 import com.ptool.pojo.Postcode;
 import com.ptool.pojo.Ring;
 
@@ -112,8 +112,8 @@ public class JSONUtil {
 		return postcode;
 	}
 	
-	private Polygon toPolygon(JSONArray jsonPolygon) {
-		Polygon polygon=new Polygon();
+	private PolygonTO toPolygon(JSONArray jsonPolygon) {
+		PolygonTO polygon=new PolygonTO();
 		JSONArray jsonOuterRing=(JSONArray)jsonPolygon.get(0);
 		Ring outerRing=toRing(jsonOuterRing);
 		outerRing.setRingType(Ring.TYPE_OUTER);

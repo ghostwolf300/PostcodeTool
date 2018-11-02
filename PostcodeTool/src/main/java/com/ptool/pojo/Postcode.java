@@ -7,7 +7,7 @@ public class Postcode {
 	
 	private String postcode=null;
 	private String name=null;
-	private List<Polygon> polygons=null;
+	private List<PolygonTO> polygons=null;
 	
 	public Postcode() {
 		
@@ -34,17 +34,17 @@ public class Postcode {
 		this.name = name;
 	}
 
-	public List<Polygon> getPolygons() {
+	public List<PolygonTO> getPolygons() {
 		return polygons;
 	}
 
-	public void setPolygons(List<Polygon> polygons) {
+	public void setPolygons(List<PolygonTO> polygons) {
 		this.polygons = polygons;
 	}
 	
-	public void addPolygon(Polygon polygon) {
+	public void addPolygon(PolygonTO polygon) {
 		if(polygons==null) {
-			polygons=new ArrayList<Polygon>();
+			polygons=new ArrayList<PolygonTO>();
 		}
 		polygons.add(polygon);
 	}

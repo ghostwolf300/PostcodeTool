@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ptool.pojo.Coordinates;
-import com.ptool.pojo.Polygon;
+import com.ptool.pojo.PolygonTO;
 import com.ptool.pojo.Postcode;
 import com.ptool.pojo.Ring;
 
@@ -38,7 +38,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 				pstmnt.setString(2, pc.getName());
 				pstmnt.executeUpdate();
 				
-				for(Polygon polygon : pc.getPolygons()) {
+				for(PolygonTO polygon : pc.getPolygons()) {
 					savePolygon(polygon,conn);
 					savePostcodePolygon(pc.getPostcode(),polygon.getId(),conn);
 				}
@@ -70,7 +70,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		
 	}
 	
-	private void savePolygon(Polygon polygon,Connection conn) throws SQLException{
+	private void savePolygon(PolygonTO polygon,Connection conn) throws SQLException{
 		int id=-1;
 		String sqlInsertPolygon="insert into tbl_polygon(geometry_type) values(?)";
 		PreparedStatement pstmnt=null;
@@ -250,8 +250,8 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		return pc;
 	}
 	
-	private List<Polygon> getPolygons(String postcode,Connection conn) throws SQLException{
-		List<Polygon> polygons=new ArrayList<Polygon>();
+	private List<PolygonTO> getPolygons(String postcode,Connection conn) throws SQLException{
+		List<PolygonTO> polygons=new ArrayList<PolygonTO>();
 		String sqlGetPolygons="select a.postcode,a.polygon_id,b.geometry_type "
 				+"from tbl_postcode_polygons a join tbl_polygon b on a.polygon_id=b.id "
 				+"where a.postcode=? order by a.polygon_id";
@@ -263,7 +263,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 			polygons.add(createPolygon(rsPolygons));
 		}
 		
-		for(Polygon p : polygons) {
+		for(PolygonTO p : polygons) {
 			p.setRings(getRings(p.getId(),conn));
 		}
 		
@@ -273,8 +273,8 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		return polygons;
 	}
 	
-	private Polygon createPolygon(ResultSet rs) throws SQLException {
-		Polygon p=new Polygon();
+	private PolygonTO createPolygon(ResultSet rs) throws SQLException {
+		PolygonTO p=new PolygonTO();
 		p.setId(rs.getInt("polygon_id"));
 		return p;
 	}
