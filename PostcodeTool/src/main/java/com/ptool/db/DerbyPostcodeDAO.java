@@ -8,10 +8,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ptool.pojo.Coordinates;
+import com.ptool.pojo.CoordinateTO;
 import com.ptool.pojo.PolygonTO;
-import com.ptool.pojo.Postcode;
-import com.ptool.pojo.Ring;
+import com.ptool.pojo.PostcodeTO;
+import com.ptool.pojo.RingTO;
 
 public class DerbyPostcodeDAO implements IPostcodeDAO {
 
@@ -26,14 +26,14 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		}
 	}
 
-	public void savePostcodes(List<Postcode> postcodes) {
+	public void savePostcodes(List<PostcodeTO> postcodes) {
 		String sqlInsertPostCode="insert into tbl_postcode(postcode,name) values(?,?)";
 		PreparedStatement pstmnt=null;
 		Connection conn=DerbyDAOFactory.createConnection();
 		
 		try {
 			pstmnt=conn.prepareStatement(sqlInsertPostCode);
-			for(Postcode pc : postcodes) {
+			for(PostcodeTO pc : postcodes) {
 				pstmnt.setString(1, pc.getPostcode());
 				pstmnt.setString(2, pc.getName());
 				pstmnt.executeUpdate();
@@ -85,7 +85,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 			polygon.setId(id);
 		}
 
-		for(Ring ring : polygon.getRings()) {
+		for(RingTO ring : polygon.getRings()) {
 			saveRing(ring,conn);
 			savePolygonRing(polygon.getId(),ring.getId(),conn);
 		}
@@ -120,7 +120,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		
 	}
 	
-	private void saveRing(Ring ring,Connection conn) throws SQLException {
+	private void saveRing(RingTO ring,Connection conn) throws SQLException {
 		
 		PreparedStatement pstmnt=null;
 		String sqlSaveRing="insert into tbl_ring(ring_type) values(?)";
@@ -135,7 +135,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 			ring.setId(rsKey.getInt(1));
 		}
 		
-		for(Coordinates coordinates : ring.getCoordinates()) {
+		for(CoordinateTO coordinates : ring.getCoordinates()) {
 			coordinates.setRingId(ring.getId());
 			saveCoordinates(coordinates,conn);
 		}
@@ -145,7 +145,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 			
 	}
 	
-	private void saveCoordinates(Coordinates coordinates,Connection conn) throws SQLException{
+	private void saveCoordinates(CoordinateTO coordinates,Connection conn) throws SQLException{
 		PreparedStatement pstmnt=null;
 		String sqlInsertCoordinates="insert into tbl_coordinates(ring_id,order_num,x,y) values(?,?,?,?)";
 		
@@ -212,7 +212,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		
 	}
 
-	public Postcode getPostcode(String postcode) {
+	public PostcodeTO findPostcode(String postcode) {
 		
 		String sqlGetPostcode="select postcode,name from tbl_postcode where postcode=?";
 		
@@ -220,14 +220,14 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		PreparedStatement pstmnt=null;
 		ResultSet rsPostcode=null;
 		
-		Postcode pc=null;
+		PostcodeTO pc=null;
 		
 		try {
 			pstmnt=conn.prepareStatement(sqlGetPostcode);
 			pstmnt.setString(1, postcode);
 			rsPostcode=pstmnt.executeQuery();
 			if(rsPostcode.next()) {
-				pc=new Postcode();
+				pc=new PostcodeTO();
 				pc.setPostcode(rsPostcode.getString("postcode"));
 				pc.setName(rsPostcode.getString("name"));
 				pc.setPolygons(getPolygons(pc.getPostcode(),conn));
@@ -279,8 +279,8 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		return p;
 	}
 	
-	private List<Ring> getRings(int polygonId,Connection conn) throws SQLException{
-		List<Ring> rings=new ArrayList<Ring>();
+	private List<RingTO> getRings(int polygonId,Connection conn) throws SQLException{
+		List<RingTO> rings=new ArrayList<RingTO>();
 		String sqlGetRings="select a.polygon_id,a.ring_id,b.ring_type " 
 				+"from tbl_polygon_rings a join tbl_ring b on a.ring_id=b.id "
 				+"where a.polygon_id=? order by a.ring_id";
@@ -292,7 +292,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 			rings.add(createRing(rsRings));
 		}
 		
-		for(Ring ring : rings) {
+		for(RingTO ring : rings) {
 			ring.setCoordinates(getCoordinates(ring.getId(),conn));
 		}
 		
@@ -302,15 +302,15 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		return rings;
 	}
 	
-	private Ring createRing(ResultSet rs) throws SQLException{
-		Ring ring=new Ring();
+	private RingTO createRing(ResultSet rs) throws SQLException{
+		RingTO ring=new RingTO();
 		ring.setId(rs.getInt("ring_id"));
 		ring.setRingType(rs.getInt("ring_type"));
 		return ring;
 	}
 	
-	private List<Coordinates> getCoordinates(int ringId,Connection conn) throws SQLException{
-		List<Coordinates> coordinates=new ArrayList<Coordinates>();
+	private List<CoordinateTO> getCoordinates(int ringId,Connection conn) throws SQLException{
+		List<CoordinateTO> coordinates=new ArrayList<CoordinateTO>();
 		String sqlGetCoordinates="select ring_id,order_num,x,y from tbl_coordinates "
 				+ "where ring_id=? order by order_num";
 		PreparedStatement pstmnt=conn.prepareStatement(sqlGetCoordinates);
@@ -328,8 +328,8 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		return coordinates;
 	}
 	
-	private Coordinates createCoordinates(ResultSet rs) throws SQLException {
-		Coordinates coord=new Coordinates();
+	private CoordinateTO createCoordinates(ResultSet rs) throws SQLException {
+		CoordinateTO coord=new CoordinateTO();
 		coord.setRingId(rs.getInt("ring_id"));
 		coord.setOrderNum(rs.getInt("order_num"));
 		coord.setX(rs.getDouble("x"));
@@ -338,21 +338,21 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		
 	}
 
-	public List<Postcode> getAllPostcodes() {
+	public List<PostcodeTO> findAllPostcodes() {
 		String sqlGetAllPostcodes="select postcode,name from tbl_postcode";
 		
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
 		ResultSet rsPostcodes=null;
 		
-		Postcode pc=null;
-		List<Postcode> postcodes=new ArrayList<Postcode>();
+		PostcodeTO pc=null;
+		List<PostcodeTO> postcodes=new ArrayList<PostcodeTO>();
 		
 		try {
 			pstmnt=conn.prepareStatement(sqlGetAllPostcodes);
 			rsPostcodes=pstmnt.executeQuery();
 			while(rsPostcodes.next()) {
-				pc=new Postcode();
+				pc=new PostcodeTO();
 				pc.setPostcode(rsPostcodes.getString("postcode"));
 				pc.setName(rsPostcodes.getString("name"));
 				pc.setPolygons(getPolygons(pc.getPostcode(),conn));
@@ -372,6 +372,47 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 				e.printStackTrace();
 			}
 		}
+		
+		return postcodes;
+	}
+
+	public List<PostcodeTO> findPostcodesByAreaId(int areaId) {
+		String sqlFindPostcodesByAreaId="select a.postcode,a.name from tbl_postcode a "
+				+ "join tbl_area_postcodes b on a.postcode=b.postcode where b.area_id=?";
+		
+		Connection conn=DerbyDAOFactory.createConnection();
+		PreparedStatement pstmnt=null;
+		ResultSet rsPostcodes=null;
+		
+		PostcodeTO pc=null;
+		List<PostcodeTO> postcodes=new ArrayList<PostcodeTO>();
+		
+		try {
+			pstmnt=conn.prepareStatement(sqlFindPostcodesByAreaId);
+			pstmnt.setInt(1, areaId);
+			rsPostcodes=pstmnt.executeQuery();
+			while(rsPostcodes.next()) {
+				pc=new PostcodeTO();
+				pc.setPostcode(rsPostcodes.getString("postcode"));
+				pc.setName(rsPostcodes.getString("name"));
+				pc.setPolygons(getPolygons(pc.getPostcode(),conn));
+				postcodes.add(pc);
+			}
+		} 
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				conn.close();
+			} 
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		
 		return postcodes;
 	}

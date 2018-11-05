@@ -2,6 +2,7 @@ package com.ptool.kml;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jdom2.Document;
@@ -9,15 +10,19 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
 
 import com.ptool.geo.Arc;
 import com.ptool.geo.GeometryCollection;
 import com.ptool.geo.GeometryObject;
 
 import com.ptool.geo.Position;
-import com.ptool.pojo.Postcode;
-import com.ptool.pojo.Ring;
-import com.ptool.pojo.Coordinates;
+import com.ptool.pojo.PostcodeTO;
+import com.ptool.pojo.RingTO;
+import com.ptool.pojo.CoordinateTO;
 import com.ptool.pojo.PolygonTO;
 
 public class KMLUtil {
@@ -139,11 +144,11 @@ public class KMLUtil {
 		outerBoundaryIs.addContent(linearRing);
 		Element coordinates=new Element("coordinates");
 		
-		List<Ring> rings=polygon.getRings();
-		Ring outerRing=rings.get(0);
+		List<RingTO> rings=polygon.getRings();
+		RingTO outerRing=rings.get(0);
 		
 		String coordTxt=new String();
-		for(Coordinates c : outerRing.getCoordinates()) {
+		for(CoordinateTO c : outerRing.getCoordinates()) {
 			coordTxt+=c.getX()+","+c.getY()+",0 ";
 		}
 		
@@ -337,12 +342,52 @@ public class KMLUtil {
 		
 	}
 	
-	public void addPostcode(Postcode postcode) {
+	public void addPostcode(PostcodeTO postcode) {
 		Element folder=kmlDoc.getRootElement().getChild("Document");
 		for(PolygonTO polygon : postcode.getPolygons()) {
 			folder.addContent(getPlacemarkElement(postcode.getName(),polygon));
 		}
 		
+	}
+	
+	public List<Polygon> extractPolygons(){
+		Element root=kmlDoc.getRootElement();
+		Namespace ns=Namespace.getNamespace("http://www.opengis.net/kml/2.2");
+		Element docElement=root.getChild("Document", ns);
+		List<Element> placemarkElements=docElement.getChildren("Placemark",ns);
+		List<Polygon> polygons=new ArrayList<Polygon>();
+		for(Element placemarkElement : placemarkElements) {
+			polygons.add(readPolygonData(placemarkElement));
+		}
+		return polygons;
+	}
+	
+	private Polygon readPolygonData(Element ePlacemark) {
+		GeometryFactory factory=new GeometryFactory();
+		LinearRing shell=null;
+		Coordinate[] coordinates=null;
+		Polygon polygon=null;
+		Namespace ns=ePlacemark.getNamespace();
+		String coordinatesText=ePlacemark
+				.getChild("Polygon",ns)
+				.getChild("outerBoundaryIs",ns)
+				.getChild("LinearRing",ns)
+				.getChild("coordinates",ns).getText();
+		
+		String[] coordinatePairs=coordinatesText.split(",0 ");
+		coordinates=new Coordinate[coordinatePairs.length-1];
+		for(int c=0;c<coordinatePairs.length-1;c++) {
+			String[] coordinatePair=coordinatePairs[c].split(",");
+			double x=Double.valueOf(coordinatePair[0]);
+			double y=Double.valueOf(coordinatePair[1]);
+			coordinates[c]=new Coordinate(x,y);
+			System.out.println(x+"\t"+y);
+		}
+		
+		shell=factory.createLinearRing(coordinates);
+		polygon=factory.createPolygon(shell);
+		
+		return polygon;
 	}
 	
 	

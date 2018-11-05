@@ -1,17 +1,20 @@
 package com.ptool.pojo;
 
-public class Coordinates {
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinates;
+
+public class CoordinateTO {
 	
 	private int ringId;
 	private int orderNum;
 	private double x;
 	private double y;
 	
-	public Coordinates() {
+	public CoordinateTO() {
 		
 	}
 
-	public Coordinates(int ringId, int orderNum, double x, double y) {
+	public CoordinateTO(int ringId, int orderNum, double x, double y) {
 		this.ringId = ringId;
 		this.orderNum = orderNum;
 		this.x = x;
@@ -48,6 +51,11 @@ public class Coordinates {
 
 	public void setY(double y) {
 		this.y = y;
+	}
+	
+	public Coordinate getGeometryCoordinates() {
+		Coordinate coord=new Coordinate(this.x,this.y);
+		return coord;
 	}
 	
 	

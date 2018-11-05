@@ -12,10 +12,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.ptool.pojo.Coordinates;
+import com.ptool.pojo.CoordinateTO;
 import com.ptool.pojo.PolygonTO;
-import com.ptool.pojo.Postcode;
-import com.ptool.pojo.Ring;
+import com.ptool.pojo.PostcodeTO;
+import com.ptool.pojo.RingTO;
 
 public class JSONUtil {
 	
@@ -32,8 +32,8 @@ public class JSONUtil {
 		return instance;
 	}
 	
-	public List<Postcode> convert(JSONObject json){
-		List<Postcode> postcodes=new ArrayList<Postcode>();
+	public List<PostcodeTO> convert(JSONObject json){
+		List<PostcodeTO> postcodes=new ArrayList<PostcodeTO>();
 		JSONArray postcodeArray=(JSONArray) json.get("features");
 		
 		for(Object obj : postcodeArray) {
@@ -96,9 +96,9 @@ public class JSONUtil {
 		return json;
 	}
 	
-	private Postcode toPostcode(JSONObject json) {
+	private PostcodeTO toPostcode(JSONObject json) {
 		JSONObject prop=(JSONObject) json.get("properties");
-		Postcode postcode=new Postcode();
+		PostcodeTO postcode=new PostcodeTO();
 		postcode.setPostcode((String)prop.get("posti_alue"));
 		postcode.setName((String)prop.get("nimi"));
 		JSONObject jsonGeom=(JSONObject) json.get("geometry");
@@ -115,27 +115,27 @@ public class JSONUtil {
 	private PolygonTO toPolygon(JSONArray jsonPolygon) {
 		PolygonTO polygon=new PolygonTO();
 		JSONArray jsonOuterRing=(JSONArray)jsonPolygon.get(0);
-		Ring outerRing=toRing(jsonOuterRing);
-		outerRing.setRingType(Ring.TYPE_OUTER);
+		RingTO outerRing=toRing(jsonOuterRing);
+		outerRing.setRingType(RingTO.TYPE_OUTER);
 		polygon.addRing(outerRing);
 		
-		Ring innerRing=null;
+		RingTO innerRing=null;
 		for(int i=1;i<jsonPolygon.size();i++) {
 			JSONArray jsonRing=(JSONArray)jsonPolygon.get(i);
 			innerRing=toRing(jsonRing);
-			innerRing.setRingType(Ring.TYPE_INNER);
+			innerRing.setRingType(RingTO.TYPE_INNER);
 			polygon.addRing(innerRing);
 		}
 		return polygon;
 	}
 	
-	private Ring toRing(JSONArray jsonRing) {
-		Ring ring=new Ring();
+	private RingTO toRing(JSONArray jsonRing) {
+		RingTO ring=new RingTO();
 		JSONArray jsonCoordinates=null;
-		Coordinates coordinates=null;
+		CoordinateTO coordinates=null;
 		for(int i=0;i<jsonRing.size();i++) {
 			jsonCoordinates=(JSONArray)jsonRing.get(i);
-			coordinates=new Coordinates();
+			coordinates=new CoordinateTO();
 			coordinates.setOrderNum(i);
 			
 			//System.out.println(jsonCoordinates.get(0)+"\t"+jsonCoordinates.get(1));

@@ -37,3 +37,22 @@ create table tbl_postcode_polygons(
 	primary key(postcode,polygon_id)
 );
 
+create table tbl_area(
+	id int not null generated always as identity (start with 1 increment by 1),
+	name varchar(64) not null,
+	color_background varchar(7),
+	color_line varchar(7),
+	line_thickness double,
+	transparency double,
+	primary key(id)
+);
+
+drop table tbl_area;
+
+create table tbl_area_postcodes(
+	area_id int not null constraint fk_area_postcodes_area_id references tbl_area on delete cascade on update restrict,
+	postcode varchar(5) not null constraint fk_area_postcodes_postcode references tbl_postcode on delete cascade on update restrict,
+	primary key(area_id,postcode)
+);
+
+drop table tbl_area_postcodes;

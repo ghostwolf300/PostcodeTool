@@ -3,17 +3,19 @@ package com.ptool.pojo;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Postcode {
+import org.locationtech.jts.geom.Polygon;
+
+public class PostcodeTO {
 	
 	private String postcode=null;
 	private String name=null;
 	private List<PolygonTO> polygons=null;
 	
-	public Postcode() {
+	public PostcodeTO() {
 		
 	}
 	
-	public Postcode(String postcode,String name) {
+	public PostcodeTO(String postcode,String name) {
 		this.postcode=postcode;
 		this.name=name;
 	}
@@ -47,6 +49,16 @@ public class Postcode {
 			polygons=new ArrayList<PolygonTO>();
 		}
 		polygons.add(polygon);
+	}
+	
+	public boolean isInsideArea(Polygon areaPolygon) {
+		boolean inside=false;
+		for(PolygonTO p : polygons) {
+			if(p.getGeometryPolygon().intersects(areaPolygon)) {
+				inside=true;
+			}
+		}
+		return inside;
 	}
 
 	@Override

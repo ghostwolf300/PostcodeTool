@@ -1,20 +1,26 @@
 package com.ptool;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.jdom2.Document;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.locationtech.jts.geom.Polygon;
 
 import com.ptool.csv.MyCSVReader;
 import com.ptool.db.DAOFactory;
+import com.ptool.db.IAreaDAO;
 import com.ptool.db.IPostcodeDAO;
 import com.ptool.geo.Arc;
 import com.ptool.geo.Position;
 import com.ptool.json.JSONUtil;
+import com.ptool.kml.KMLReader;
 import com.ptool.kml.KMLUtil;
 import com.ptool.kml.KMLWriter;
 import com.ptool.net.NetUtil;
-import com.ptool.pojo.Postcode;
+import com.ptool.pojo.AreaTO;
+import com.ptool.pojo.PostcodeTO;
 
 public class PTool {
 	
@@ -25,11 +31,12 @@ public class PTool {
 	public static void main(String[] args) {
 		
 		PTool tool=new PTool();
-		List<Postcode> postcodes=tool.getPostcodesWFS();
+		//List<PostcodeTO> postcodes=tool.getPostcodesWFS();
 		//List<Postcode> postcodes=tool.getPostcodesFromFile("filename.json");
-		tool.savePostcodes(postcodes);
-		tool.createPostcodeKML();
-		
+		//tool.savePostcodes(postcodes);
+		//tool.createPostcodeKML();
+		//tool.findPostcodesInsideArea();
+		tool.createPostcodeMap(2);
 
 	}
 	
@@ -60,42 +67,86 @@ public class PTool {
 		dao.createDB();
 	}
 	
-	public List<Postcode> getPostcodesWFS(){
+	public List<PostcodeTO> getPostcodesWFS(){
 		//Retrieves postcodes from http://geo.stat.fi/geoserver/postialue/wfs
 		//Tilastokeskuksen palvelurajapinta (WFS)
 		//Huom! Hakee 2018 tiedot. Muuta NetUtil luokkaa, jos haluat hakea tiedot muilta vuosilta
 		JSONObject json=NetUtil.getInstance().getPostcodeJSON();
-		List<Postcode> postcodes=JSONUtil.getInstance().convert(json);
+		List<PostcodeTO> postcodes=JSONUtil.getInstance().convert(json);
 		return postcodes;
 	}
 	
-	public List<Postcode> getPostcodesFromFile(String path){
+	public List<PostcodeTO> getPostcodesFromFile(String path){
 		JSONObject json=JSONUtil.getInstance().readFromFile(path);
-		List<Postcode> postcodes=JSONUtil.getInstance().convert(json);
+		List<PostcodeTO> postcodes=JSONUtil.getInstance().convert(json);
 		return postcodes;
 	}
 	
-	public void savePostcodes(List<Postcode> postcodes) {
+	public void savePostcodes(List<PostcodeTO> postcodes) {
 		IPostcodeDAO dao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
 		dao.clearTables();
 		dao.savePostcodes(postcodes);
 	}
 	
-	public void createPostcodeKML() {
+	public void createPostcodeMap() {
 		IPostcodeDAO dao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
-		List<Postcode> postcodes=dao.getAllPostcodes();
+		List<PostcodeTO> postcodes=dao.findAllPostcodes();
 		KMLUtil util=KMLUtil.getInstance();
 		util.createKMLDocument("Postialueet 2018");
-		for(Postcode pc : postcodes) {
+		for(PostcodeTO pc : postcodes) {
 			util.addPostcode(pc);
 		}
 		KMLWriter.getInstance().write(util.getKmlDoc(),"postialueet_2018.kml");
+	}
+	
+	public void createPostcodeMap(int areaId) {
+		IPostcodeDAO pcDao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
+		IAreaDAO areaDao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getAreaDAO();
+		AreaTO area=areaDao.findAreaById(areaId);
+		List<PostcodeTO> postcodes=pcDao.findPostcodesByAreaId(areaId);
+		KMLUtil util=KMLUtil.getInstance();
+		util.createKMLDocument(area.getName());
+		for(PostcodeTO pc : postcodes) {
+			util.addPostcode(pc);
+		}
+		KMLWriter.getInstance().write(util.getKmlDoc(),area.getName()+".kml");
 		
 	}
 	
 	public void findPostcodesInsideArea() {
 		//luetaan sis‰‰n alue kml ja etsit‰‰n sis‰‰n j‰‰v‰t postialueet
-		String areaKMLFile="";
+		String areaKMLFile="kml/Rajattu alue.kml";
+		Document doc=KMLReader.getInstance().readKMLFile(areaKMLFile);
+		KMLUtil kmlUtil=KMLUtil.getInstance();
+		kmlUtil.setKmlDoc(doc);
+		List<Polygon> polygons=kmlUtil.extractPolygons();
+		
+		IPostcodeDAO pcDao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
+		List<PostcodeTO> postcodes=pcDao.findAllPostcodes();
+		List<PostcodeTO> insidePostcodes=new ArrayList<PostcodeTO>();
+		
+		for(Polygon p : polygons) {
+			for(PostcodeTO postcode : postcodes) {
+				if(postcode.isInsideArea(p)) {
+					insidePostcodes.add(postcode);
+				}
+			}
+		}
+		
+		for(PostcodeTO pc : insidePostcodes) {
+			System.out.println(pc);
+		}
+		
+		System.out.println("size: "+insidePostcodes.size());
+		
+		IAreaDAO areaDao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getAreaDAO();
+		AreaTO myArea=new AreaTO("Rajaustesti 05112018");
+		myArea.setBackgroundColor("#FF3642");
+		myArea.setTransparency(0.15);
+		myArea.setPostcodes(insidePostcodes);
+		areaDao.saveArea(myArea);
+		
+		
 	}
 	
 	public void findModifiedPostcodes() {
