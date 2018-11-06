@@ -26,6 +26,7 @@ public class PToolFrame extends JFrame {
 	}
 	
 	private void initialize() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Postcode Tool 0.1");
 		//Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
 		setExtendedState(JFrame.MAXIMIZED_BOTH);

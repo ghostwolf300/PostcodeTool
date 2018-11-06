@@ -41,6 +41,16 @@ public class DerbyDAOFactory extends DAOFactory {
 		return conn;
 	}
 	
+	public static void closeConnection() {
+		try {
+			DriverManager.getConnection("jdbc:derby:"+DB_URL+";shutdown=true");
+		} 
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public IPostcodeDAO getPostcodeDAO() {
 		return new DerbyPostcodeDAO();

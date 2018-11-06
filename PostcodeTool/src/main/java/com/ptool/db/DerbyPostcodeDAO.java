@@ -339,7 +339,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 	}
 
 	public List<PostcodeTO> findAllPostcodes() {
-		String sqlGetAllPostcodes="select postcode,name from tbl_postcode";
+		String sqlGetAllPostcodes="select postcode,name from tbl_postcode order by name";
 		
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
