@@ -63,7 +63,7 @@ public class PostcodeTO {
 
 	@Override
 	public String toString() {
-		return "Postcode [postcode=" + postcode + ", name=" + name + "]";
+		return postcode+" "+name;
 	}
 	
 }

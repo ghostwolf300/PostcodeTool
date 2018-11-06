@@ -365,6 +365,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		}
 		finally {
 			try {
+				pstmnt.close();
 				conn.close();
 			} 
 			catch (SQLException e) {
@@ -405,6 +406,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		}
 		finally {
 			try {
+				pstmnt.close();
 				conn.close();
 			} 
 			catch (SQLException e) {

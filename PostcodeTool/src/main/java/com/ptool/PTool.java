@@ -8,12 +8,14 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.locationtech.jts.geom.Polygon;
 
+import com.ptool.controller.DefaultController;
 import com.ptool.csv.MyCSVReader;
 import com.ptool.db.DAOFactory;
 import com.ptool.db.IAreaDAO;
 import com.ptool.db.IPostcodeDAO;
 import com.ptool.geo.Arc;
 import com.ptool.geo.Position;
+import com.ptool.gui.PToolFrame;
 import com.ptool.json.JSONUtil;
 import com.ptool.kml.KMLReader;
 import com.ptool.kml.KMLUtil;
@@ -30,13 +32,18 @@ public class PTool {
 	
 	public static void main(String[] args) {
 		
-		PTool tool=new PTool();
+		//PTool tool=new PTool();
 		//List<PostcodeTO> postcodes=tool.getPostcodesWFS();
 		//List<Postcode> postcodes=tool.getPostcodesFromFile("filename.json");
 		//tool.savePostcodes(postcodes);
 		//tool.createPostcodeKML();
 		//tool.findPostcodesInsideArea();
-		tool.createPostcodeMap(2);
+		//tool.createPostcodeMap(2);
+		DefaultController controller=new DefaultController();
+		PToolFrame gui=new PToolFrame(controller);
+		controller.loadPostcodes();
+		gui.setVisible(true);
+		
 
 	}
 	

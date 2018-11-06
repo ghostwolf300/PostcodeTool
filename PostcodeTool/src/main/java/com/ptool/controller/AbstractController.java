@@ -1,10 +1,13 @@
-package com.ptool.gui;
+package com.ptool.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ptool.gui.IView;
+import com.ptool.model.AbstractModel;
 
 
 public abstract class AbstractController implements PropertyChangeListener {
