@@ -5,6 +5,21 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>PostcodeTool</name>
   <description>Tool for postcodes</description>
+  
+  	<repositories>
+  		<repository>
+            <id>org-geotools</id>
+            <name>GeoTools repo</name>
+            <url>http://repo.boundlessgeo.com/main/</url>
+        </repository>
+        <repository>
+            <id>org-geomajas</id>
+            <name>Geomajas repo</name>
+            <url>http://maven.geomajas.org/</url>
+        </repository>
+    </repositories>
+  
+  
   <dependencies>
   	<dependency>
   		<groupId>com.googlecode.json-simple</groupId>
