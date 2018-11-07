@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Wed Nov 07 13:51:36 EET 2018:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0166-ee03-7562-000006d119a0 
+Wed Nov 07 16:05:10 EET 2018:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.14.2.0 - (1828579): instance a816c00e-0166-ee7d-bdf0-000006d11a80 
 on database directory C:\Users\ville.susi\git\PostcodeTool\PostcodeTool\PostcodeDB with class loader sun.misc.Launcher$AppClassLoader@73d16e93 
 Loaded from file:/C:/Users/ville.susi/.m2/repository/org/apache/derby/derby/10.14.2.0/derby-10.14.2.0.jar
 java.vendor=Oracle Corporation
