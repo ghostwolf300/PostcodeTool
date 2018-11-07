@@ -22,16 +22,17 @@ import org.geotools.swing.JMapPane;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.ptool.controller.DefaultController;
 import com.ptool.geo.GeoHelper;
-import com.ptool.geo.PostcodeLayer;
 import com.ptool.model.MapModel;
 import com.ptool.model.PostcodeModel;
 import com.ptool.pojo.MapDataTO;
+import com.ptool.pojo.PolygonTO;
 import com.ptool.pojo.PostcodeTO;
 
 public class PostcodeMapPane extends JMapPane implements IView{
@@ -82,13 +83,8 @@ public class PostcodeMapPane extends JMapPane implements IView{
 	}
 	
 	private void updateMapContent(List<PostcodeTO> postcodes) {
-		this.getMapContent().addLayer(getPointLayer());
-	}
-	
-	private Layer getTitleLayer() {
-		Layer layer=new PostcodeLayer(this.getDisplayArea());
-		layer.setTitle(mapData.getName());
-		return layer;
+		//this.getMapContent().addLayer(getPointLayer());
+		this.getMapContent().addLayer(getPostcodeLayer(postcodes));
 	}
 	
 	private Layer getPointLayer() {
@@ -124,6 +120,35 @@ public class PostcodeMapPane extends JMapPane implements IView{
 		Style style = SLD.createPointStyle("Star", Color.BLUE, Color.BLUE, 0.3f, 15);
 		Layer layer = new FeatureLayer(DataUtilities.collection(features), style);
 		layer.setTitle("NewPointLayer");
+		
+		return layer;
+	}
+	
+	private Layer getPostcodeLayer(List<PostcodeTO> postcodes) {
+		
+		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
+		builder.setName("MyFeatureType");
+		builder.setCRS(DefaultGeographicCRS.WGS84); // set crs        
+		builder.add("polygon", Polygon.class);
+
+		// build the type
+		SimpleFeatureType TYPE = builder.buildFeatureType();
+
+		// create features using the type defined
+		SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
+		
+		List<SimpleFeature> features = new ArrayList<SimpleFeature>();
+		
+		for(PostcodeTO pc : postcodes) {
+			List<PolygonTO> postcodePolygons=pc.getPolygons();
+			for(PolygonTO pcPoly : postcodePolygons) {
+				featureBuilder.add(pcPoly.getGeometryPolygon());
+				SimpleFeature feature=featureBuilder.buildFeature(null);
+				features.add(feature);
+			}
+		}
+		Style style=SLD.createPolygonStyle(Color.RED, Color.BLUE, 0.25f);
+		Layer layer = new FeatureLayer(DataUtilities.collection(features), style);
 		
 		return layer;
 	}
