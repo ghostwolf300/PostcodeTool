@@ -41,6 +41,7 @@ public class PTool {
 		//tool.createPostcodeMap(2);
 		DefaultController controller=new DefaultController();
 		PToolFrame gui=new PToolFrame(controller);
+		controller.loadMap();
 		controller.loadPostcodes();
 		gui.setVisible(true);
 		

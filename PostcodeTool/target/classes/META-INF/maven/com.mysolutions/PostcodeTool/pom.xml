@@ -6,20 +6,6 @@
   <name>PostcodeTool</name>
   <description>Tool for postcodes</description>
   
-  	<repositories>
-  		<repository>
-            <id>org-geotools</id>
-            <name>GeoTools repo</name>
-            <url>http://repo.boundlessgeo.com/main/</url>
-        </repository>
-        <repository>
-            <id>org-geomajas</id>
-            <name>Geomajas repo</name>
-            <url>http://maven.geomajas.org/</url>
-        </repository>
-    </repositories>
-  
-  
   <dependencies>
   	<dependency>
   		<groupId>com.googlecode.json-simple</groupId>
@@ -51,5 +37,40 @@
   		<artifactId>jts-core</artifactId>
   		<version>1.16.0</version>
   	</dependency>
+  	<dependency>
+  		<groupId>org.geotools</groupId>
+  		<artifactId>gt-swing</artifactId>
+  		<version>20.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>jgridshift</groupId>
+  		<artifactId>jgridshift</artifactId>
+  		<version>1.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.geotools</groupId>
+  		<artifactId>gt-epsg-hsql</artifactId>
+  		<version>20.0</version>
+  	</dependency>
   </dependencies>
+  
+  <repositories>
+  	<repository>
+  		<snapshots>
+        	<enabled>true</enabled>
+        </snapshots>
+        <id>boundless</id>
+        <name>Boundless Maven Repository</name>
+        <url>http://repo.boundlessgeo.com/main</url>
+  	</repository>
+  	<repository>
+  		<id>geomajas</id>
+        <name>Geomajas Maven Repository</name>
+        <url>http://maven.geomajas.org/</url>
+  	</repository>
+  </repositories>
+  
+  <properties>
+  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 </project>

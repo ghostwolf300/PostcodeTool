@@ -61,4 +61,9 @@ public class DerbyDAOFactory extends DAOFactory {
 		return new DerbyAreaDAO();
 	}
 
+	@Override
+	public IMapDAO getMapDAO() {
+		return new DerbyMapDAO();
+	}
+
 }

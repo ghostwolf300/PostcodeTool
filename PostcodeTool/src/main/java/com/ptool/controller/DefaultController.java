@@ -9,8 +9,13 @@ public class DefaultController extends AbstractController {
 	public DefaultController() {
 		super();
 		service=new PToolService();
+		this.addModel(service.getMapModel());
 		this.addModel(service.getPostcodeModel());
 		this.addModel(service.getAreaModel());
+	}
+	
+	public void loadMap() {
+		service.loadMap(1);
 	}
 	
 	public void loadPostcodes() {

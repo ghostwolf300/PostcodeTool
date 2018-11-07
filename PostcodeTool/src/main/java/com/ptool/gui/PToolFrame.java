@@ -44,7 +44,8 @@ public class PToolFrame extends JFrame {
 	
 	private JPanel getCenterPane() {
 		if (centerPane == null) {
-			centerPane = new JPanel();
+			//centerPane = new JPanel();
+			centerPane=new PostcodeMapPane(controller);
 		}
 		return centerPane;
 	}

@@ -4,6 +4,7 @@ public abstract class DAOFactory {
 	
 	public static final int DERBY=1;
 	
+	public abstract IMapDAO getMapDAO();
 	public abstract IPostcodeDAO getPostcodeDAO();
 	public abstract IAreaDAO getAreaDAO();
 	

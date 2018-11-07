@@ -1,3 +1,14 @@
+create table tbl_map(
+	id int not null generated always as identity (start with 1 increment by 1),
+	name varchar(64) not null,
+	min_x double,
+	min_y double,
+	max_x double,
+	max_y double,
+	crs varchar(64),
+	primary key(id)
+);
+
 create table tbl_postcode(
 	postcode varchar(5) not null,
 	name varchar(64),

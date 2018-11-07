@@ -20,6 +20,7 @@ select a.postcode,a.name from tbl_postcode a join tbl_area_postcodes b on a.post
 
 select * from tbl_area_postcodes where area_id=2;
 
+select * from tbl_map;
 
 
 

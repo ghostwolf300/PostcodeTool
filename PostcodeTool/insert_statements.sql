@@ -6,3 +6,6 @@ insert into tbl_area_postcodes(area_id,postcode) values(1,'41370');
 insert into tbl_area_postcodes(area_id,postcode) values(1,'41390');
 insert into tbl_area_postcodes(area_id,postcode) values(1,'41400');
 insert into tbl_area_postcodes(area_id,postcode) values(1,'41410');
+
+insert into tbl_map (name,min_x,min_y,max_x,max_y,crs)
+values ('Postinumeroalueet 2018',59.45414797,19.08320879,70.09229322,31.58670394,'urn:ogc:def:crs:EPSG::4326');
