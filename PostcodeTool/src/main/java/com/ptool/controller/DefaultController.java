@@ -1,5 +1,6 @@
 package com.ptool.controller;
 
+import com.ptool.pojo.PostcodeTO;
 import com.ptool.service.PToolService;
 
 public class DefaultController extends AbstractController {
@@ -24,6 +25,10 @@ public class DefaultController extends AbstractController {
 	
 	public void loadAreas() {
 		service.loadAreas();
+	}
+	
+	public void setSelectedPostcode(PostcodeTO postcode) {
+		service.selectPostcode(postcode);
 	}
 	
 }

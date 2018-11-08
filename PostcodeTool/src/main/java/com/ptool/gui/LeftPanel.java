@@ -4,6 +4,8 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.ptool.controller.DefaultController;
 import com.ptool.model.PostcodeModel;
@@ -16,7 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
 
-public class LeftPanel extends JPanel implements IView {
+public class LeftPanel extends JPanel implements IView,ListSelectionListener {
 	/**
 	 * 
 	 */
@@ -65,6 +67,7 @@ public class LeftPanel extends JPanel implements IView {
 		if (list == null) {
 			PostcodeListModel model=new PostcodeListModel();
 			list = new JList(model);
+			list.addListSelectionListener(this);
 		}
 		return list;
 	}
@@ -77,5 +80,15 @@ public class LeftPanel extends JPanel implements IView {
 			model.setPostcodes(postcodes);
 		}
 		
+	}
+
+	public void valueChanged(ListSelectionEvent lse) {
+		if(!lse.getValueIsAdjusting()) {
+			int index=lse.getLastIndex();
+			PostcodeListModel model=(PostcodeListModel) list.getModel();
+			PostcodeTO postcode=model.getElementAt(index);
+			System.out.println(postcode);
+			
+		}
 	}
 }

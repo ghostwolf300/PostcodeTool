@@ -92,6 +92,13 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 			System.out.println("received postcodes...");
 			updateMapContent((List<PostcodeTO>) pce.getNewValue());
 		}
+		else if(pce.getPropertyName().equals(PostcodeModel.P_SELECTED)) {
+			highlightSelected((PostcodeTO)pce.getNewValue());
+		}
+		
+	}
+	
+	private void highlightSelected(PostcodeTO postcode) {
 		
 	}
 	
@@ -211,6 +218,8 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 		
 		builder.setCRS(crs); // set crs        
 		builder.add("polygon", Polygon.class);
+		builder.add("postcode", String.class);
+		builder.add("name",String.class);
 
 		// build the type
 		SimpleFeatureType TYPE = builder.buildFeatureType();
@@ -224,7 +233,10 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 			List<PolygonTO> postcodePolygons=pc.getPolygons();
 			for(PolygonTO pcPoly : postcodePolygons) {
 				featureBuilder.add(pcPoly.getGeometryPolygon());
+				featureBuilder.add(pc.getPostcode());
+				featureBuilder.add(pc.getName());
 				SimpleFeature feature=featureBuilder.buildFeature(null);
+				
 				features.add(feature);
 			}
 		}
