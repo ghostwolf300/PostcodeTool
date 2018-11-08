@@ -7,6 +7,7 @@ import org.locationtech.jts.geom.Polygon;
 
 public class PostcodeTO {
 	
+	private int mapId=-1;
 	private String postcode=null;
 	private String name=null;
 	private List<PolygonTO> polygons=null;
@@ -18,6 +19,14 @@ public class PostcodeTO {
 	public PostcodeTO(String postcode,String name) {
 		this.postcode=postcode;
 		this.name=name;
+	}
+
+	public int getMapId() {
+		return mapId;
+	}
+
+	public void setMapId(int mapId) {
+		this.mapId = mapId;
 	}
 
 	public String getPostcode() {

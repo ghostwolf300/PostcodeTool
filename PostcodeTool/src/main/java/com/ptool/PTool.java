@@ -34,7 +34,7 @@ public class PTool {
 		
 		//PTool tool=new PTool();
 		//List<PostcodeTO> postcodes=tool.getPostcodesWFS();
-		//List<Postcode> postcodes=tool.getPostcodesFromFile("filename.json");
+		//List<PostcodeTO> postcodes=tool.getPostcodesFromFile("pno_net_test_new.json");
 		//tool.savePostcodes(postcodes);
 		//tool.createPostcodeKML();
 		//tool.findPostcodesInsideArea();
@@ -92,13 +92,20 @@ public class PTool {
 	
 	public void savePostcodes(List<PostcodeTO> postcodes) {
 		IPostcodeDAO dao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
-		dao.clearTables();
+		//dao.clearTables();
+		
+		//1  EPSG 4326 (KML friendly)
+		//101 default CRS EPSG 3067
+		for(PostcodeTO pc : postcodes) {
+			pc.setMapId(1);
+		}
+		
 		dao.savePostcodes(postcodes);
 	}
 	
 	public void createPostcodeMap() {
 		IPostcodeDAO dao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
-		List<PostcodeTO> postcodes=dao.findAllPostcodes();
+		List<PostcodeTO> postcodes=dao.findAllPostcodes(1);
 		KMLUtil util=KMLUtil.getInstance();
 		util.createKMLDocument("Postialueet 2018");
 		for(PostcodeTO pc : postcodes) {
@@ -111,7 +118,7 @@ public class PTool {
 		IPostcodeDAO pcDao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
 		IAreaDAO areaDao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getAreaDAO();
 		AreaTO area=areaDao.findAreaById(areaId);
-		List<PostcodeTO> postcodes=pcDao.findPostcodesByAreaId(areaId);
+		List<PostcodeTO> postcodes=pcDao.findPostcodesByAreaId(areaId,1);
 		KMLUtil util=KMLUtil.getInstance();
 		util.createKMLDocument(area.getName());
 		for(PostcodeTO pc : postcodes) {
@@ -122,7 +129,7 @@ public class PTool {
 	}
 	
 	public void findPostcodesInsideArea() {
-		//luetaan sisään alue kml ja etsitään sisään jäävät postialueet
+		//luetaan sisï¿½ï¿½n alue kml ja etsitï¿½ï¿½n sisï¿½ï¿½n jï¿½ï¿½vï¿½t postialueet
 		String areaKMLFile="kml/Rajattu alue.kml";
 		Document doc=KMLReader.getInstance().readKMLFile(areaKMLFile);
 		KMLUtil kmlUtil=KMLUtil.getInstance();
@@ -130,7 +137,7 @@ public class PTool {
 		List<Polygon> polygons=kmlUtil.extractPolygons();
 		
 		IPostcodeDAO pcDao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
-		List<PostcodeTO> postcodes=pcDao.findAllPostcodes();
+		List<PostcodeTO> postcodes=pcDao.findAllPostcodes(1);
 		List<PostcodeTO> insidePostcodes=new ArrayList<PostcodeTO>();
 		
 		for(Polygon p : polygons) {
@@ -158,7 +165,7 @@ public class PTool {
 	}
 	
 	public void findModifiedPostcodes() {
-		//luetaan sisään muutettu (väritetty) postialue kml ja poimitaan muuttuneet alueet 
+		//luetaan sisï¿½ï¿½n muutettu (vï¿½ritetty) postialue kml ja poimitaan muuttuneet alueet 
 		String modifiedKMLFile="";
 	}
 	

@@ -58,12 +58,12 @@ public class PToolService {
 	}
 
 	public void loadMap(int id) {
-		MapDataTO mapData=mapDAO.findMapById(1);
+		MapDataTO mapData=mapDAO.findMapById(id);
 		mapModel.setMapData(mapData);
 	}
 
-	public void loadPostcodes(int year) {
-		List<PostcodeTO> postcodes=postcodeDAO.findAllPostcodes();
+	public void loadPostcodes(int mapId) {
+		List<PostcodeTO> postcodes=postcodeDAO.findAllPostcodes(mapId);
 		postcodeModel.setPostcodes(postcodes);
 	}
 	

@@ -27,20 +27,21 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 	}
 
 	public void savePostcodes(List<PostcodeTO> postcodes) {
-		String sqlInsertPostCode="insert into tbl_postcode(postcode,name) values(?,?)";
+		String sqlInsertPostCode="insert into tbl_postcode(map_id,postcode,name) values(?,?,?)";
 		PreparedStatement pstmnt=null;
 		Connection conn=DerbyDAOFactory.createConnection();
 		
 		try {
 			pstmnt=conn.prepareStatement(sqlInsertPostCode);
 			for(PostcodeTO pc : postcodes) {
-				pstmnt.setString(1, pc.getPostcode());
-				pstmnt.setString(2, pc.getName());
+				pstmnt.setInt(1, pc.getMapId());
+				pstmnt.setString(2, pc.getPostcode());
+				pstmnt.setString(3, pc.getName());
 				pstmnt.executeUpdate();
 				
 				for(PolygonTO polygon : pc.getPolygons()) {
 					savePolygon(polygon,conn);
-					savePostcodePolygon(pc.getPostcode(),polygon.getId(),conn);
+					savePostcodePolygon(pc.getMapId(),pc.getPostcode(),polygon.getId(),conn);
 				}
 			}
 			
@@ -107,13 +108,14 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		pstmnt.close();
 	}
 	
-	private void savePostcodePolygon(String postcode,int polygonId,Connection conn) throws SQLException {
+	private void savePostcodePolygon(int mapId,String postcode,int polygonId,Connection conn) throws SQLException {
 		PreparedStatement pstmnt=null;
-		String sqlInsertPostcodePolygon="insert into tbl_postcode_polygons(postcode,polygon_id) values(?,?)";
+		String sqlInsertPostcodePolygon="insert into tbl_postcode_polygons(map_id,postcode,polygon_id) values(?,?,?)";
 		
 		pstmnt=conn.prepareStatement(sqlInsertPostcodePolygon);
-		pstmnt.setString(1, postcode);
-		pstmnt.setInt(2, polygonId);
+		pstmnt.setInt(1, mapId);
+		pstmnt.setString(2, postcode);
+		pstmnt.setInt(3, polygonId);
 		pstmnt.executeUpdate();
 		
 		pstmnt.close();
@@ -212,9 +214,9 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		
 	}
 
-	public PostcodeTO findPostcode(String postcode) {
+	public PostcodeTO findPostcode(String postcode,int mapId) {
 		
-		String sqlGetPostcode="select postcode,name from tbl_postcode where postcode=?";
+		String sqlGetPostcode="select postcode,name from tbl_postcode where postcode=? and map_id=?";
 		
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
@@ -225,12 +227,14 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		try {
 			pstmnt=conn.prepareStatement(sqlGetPostcode);
 			pstmnt.setString(1, postcode);
+			pstmnt.setInt(2, mapId);
 			rsPostcode=pstmnt.executeQuery();
 			if(rsPostcode.next()) {
 				pc=new PostcodeTO();
+				pc.setMapId(mapId);
 				pc.setPostcode(rsPostcode.getString("postcode"));
 				pc.setName(rsPostcode.getString("name"));
-				pc.setPolygons(getPolygons(pc.getPostcode(),conn));
+				pc.setPolygons(getPolygons(pc.getPostcode(),mapId,conn));
 			}
 		} 
 		catch (SQLException e) {
@@ -250,14 +254,15 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		return pc;
 	}
 	
-	private List<PolygonTO> getPolygons(String postcode,Connection conn) throws SQLException{
+	private List<PolygonTO> getPolygons(String postcode,int mapId,Connection conn) throws SQLException{
 		List<PolygonTO> polygons=new ArrayList<PolygonTO>();
 		String sqlGetPolygons="select a.postcode,a.polygon_id,b.geometry_type "
 				+"from tbl_postcode_polygons a join tbl_polygon b on a.polygon_id=b.id "
-				+"where a.postcode=? order by a.polygon_id";
+				+"where a.postcode=? and a.map_id=? order by a.polygon_id";
 		ResultSet rsPolygons=null;
 		PreparedStatement pstmnt=conn.prepareStatement(sqlGetPolygons);
 		pstmnt.setString(1, postcode);
+		pstmnt.setInt(2, mapId);
 		rsPolygons=pstmnt.executeQuery();
 		while(rsPolygons.next()) {
 			polygons.add(createPolygon(rsPolygons));
@@ -338,8 +343,8 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		
 	}
 
-	public List<PostcodeTO> findAllPostcodes() {
-		String sqlGetAllPostcodes="select postcode,name from tbl_postcode order by name";
+	public List<PostcodeTO> findAllPostcodes(int mapId) {
+		String sqlGetAllPostcodes="select map_id,postcode,name from tbl_postcode where map_id=? order by name";
 		
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
@@ -350,12 +355,14 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		
 		try {
 			pstmnt=conn.prepareStatement(sqlGetAllPostcodes);
+			pstmnt.setInt(1, mapId);
 			rsPostcodes=pstmnt.executeQuery();
 			while(rsPostcodes.next()) {
 				pc=new PostcodeTO();
+				pc.setMapId(mapId);
 				pc.setPostcode(rsPostcodes.getString("postcode"));
 				pc.setName(rsPostcodes.getString("name"));
-				pc.setPolygons(getPolygons(pc.getPostcode(),conn));
+				pc.setPolygons(getPolygons(pc.getPostcode(),mapId,conn));
 				postcodes.add(pc);
 			}
 		} 
@@ -377,7 +384,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		return postcodes;
 	}
 
-	public List<PostcodeTO> findPostcodesByAreaId(int areaId) {
+	public List<PostcodeTO> findPostcodesByAreaId(int areaId,int mapId) {
 		String sqlFindPostcodesByAreaId="select a.postcode,a.name from tbl_postcode a "
 				+ "join tbl_area_postcodes b on a.postcode=b.postcode where b.area_id=?";
 		
@@ -396,7 +403,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 				pc=new PostcodeTO();
 				pc.setPostcode(rsPostcodes.getString("postcode"));
 				pc.setName(rsPostcodes.getString("name"));
-				pc.setPolygons(getPolygons(pc.getPostcode(),conn));
+				pc.setPolygons(getPolygons(pc.getPostcode(),mapId,conn));
 				postcodes.add(pc);
 			}
 		} 

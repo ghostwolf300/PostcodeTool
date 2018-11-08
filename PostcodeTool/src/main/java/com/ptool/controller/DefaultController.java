@@ -15,11 +15,11 @@ public class DefaultController extends AbstractController {
 	}
 	
 	public void loadMap() {
-		service.loadMap(1);
+		service.loadMap(101);
 	}
 	
 	public void loadPostcodes() {
-		service.loadPostcodes(2018);
+		service.loadPostcodes(101);
 	}
 	
 	public void loadAreas() {

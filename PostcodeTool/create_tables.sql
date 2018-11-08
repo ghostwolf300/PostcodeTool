@@ -11,8 +11,9 @@ create table tbl_map(
 
 create table tbl_postcode(
 	postcode varchar(5) not null,
+	map_id int not null constraint fk_postcode_map_id references tbl_map on delete cascade on update restrict;
 	name varchar(64),
-	primary key(postcode)
+	primary key(postcode,map_id)
 );
 
 
@@ -24,10 +25,11 @@ create table tbl_ring(
 
 create table tbl_coordinates(
 	ring_id int not null constraint fk_ring references tbl_ring on delete cascade on update restrict,
+	map_id int not null constraint fk_coordinates_map_id references tbl_map on delete cascade on update restrict,
 	order_num int not null,
 	x double not null,
 	y double not null,
-	primary key(ring_id, order_num)
+	primary key(ring_id,map_id,order_num)
 
 );
 

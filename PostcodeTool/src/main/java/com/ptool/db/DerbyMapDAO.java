@@ -58,4 +58,8 @@ public class DerbyMapDAO implements IMapDAO {
 		return mapData;
 	}
 
+	public void saveMap(MapDataTO mapData) {
+		Connection conn=DerbyDAOFactory.createConnection();
+	}
+
 }

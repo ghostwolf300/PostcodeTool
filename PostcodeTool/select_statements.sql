@@ -1,9 +1,9 @@
 select * from tbl_postcode;
 alter table tbl_polygon add geometry_type varchar(64);
 
-select * from tbl_postcode;
+select * from tbl_postcode where map_id=101;
 select * from tbl_polygon;
-select * from tbl_postcode_polygons;
+select * from tbl_postcode_polygons where map_id=101;
 select * from tbl_ring;
 select * from tbl_polygon_rings;
 select * from tbl_coordinates;
@@ -22,5 +22,17 @@ select * from tbl_area_postcodes where area_id=2;
 
 select * from tbl_map;
 
+delete from tbl_postcode where map_id=1;
+delete from tbl_postcode_polygons where map_id=1;
 
+select count(*) from tbl_postcode_polygons where map_id=101;
+select count(*) from tbl_postcode_polygons where map_id=1;
+
+select count(*) from tbl_postcode_polygons a join tbl_polygon_rings b on a.polygon_id=b.polygon_id where a.map_id=1;
+select count(*) from tbl_postcode_polygons a join tbl_polygon_rings b on a.polygon_id=b.polygon_id where a.map_id=101;
+
+select count(*) from tbl_coordinates;
+
+select count(*) from tbl_coordinates where ring_id in 
+(select ring_id from tbl_postcode_polygons a join tbl_polygon_rings b on a.polygon_id=b.polygon_id where a.map_id=101);
 

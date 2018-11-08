@@ -36,7 +36,8 @@ public class NetUtil {
 		JSONObject json=null;
 		String targetURL="http://geo.stat.fi/geoserver/postialue/wfs";
 		String typeNames="postialue:pno_meri_2018";
-		String crs="urn:ogc:def:crs:EPSG::4326"; //kml readable coordinate system
+		//String crs="urn:ogc:def:crs:EPSG::4326"; //kml readable coordinate system
+		String crs="urn:ogc:def:crs:EPSG::3067"; //standard
 		String urlParameters="request=GetFeature&typeNames="+typeNames+"&srsName="+crs+"&outputFormat=json";
 		
 		try {
