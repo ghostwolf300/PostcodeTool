@@ -3,11 +3,14 @@ package com.ptool.gui;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.geotools.data.DataUtilities;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -19,8 +22,14 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.lite.StreamingRenderer;
+import org.geotools.styling.FeatureTypeStyle;
+import org.geotools.styling.Fill;
+import org.geotools.styling.Rule;
 import org.geotools.styling.SLD;
+import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
+import org.geotools.styling.StyleFactory;
+import org.geotools.styling.Symbolizer;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.event.MapMouseListener;
@@ -33,6 +42,8 @@ import org.locationtech.jts.geom.Polygon;
 
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -54,6 +65,8 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 	private DefaultController controller=null;
 	private MapContent map=null;
 	private MapDataTO mapData=null;
+	private FilterFactory2 ff=null;
+	private StyleFactory sf=null;
 	
 	public PostcodeMapPane(DefaultController controller) {
 		super();
@@ -69,6 +82,9 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 		this.setMapContent(getMap());
 		GTRenderer renderer=new StreamingRenderer();
 		this.setRenderer(renderer);
+		
+		ff=CommonFactoryFinder.getFilterFactory2();
+		sf=CommonFactoryFinder.getStyleFactory();
 		
 		this.addMouseListener(this);
 		this.addMouseListener(new ScrollWheelTool(this));
@@ -236,7 +252,6 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 				featureBuilder.add(pc.getPostcode());
 				featureBuilder.add(pc.getName());
 				SimpleFeature feature=featureBuilder.buildFeature(null);
-				
 				features.add(feature);
 			}
 		}
@@ -249,10 +264,65 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 		
 		return layer;
 	}
+	
+	private void selectFeature(MapMouseEvent ev) {
+		System.out.println("click at: "+ev.getWorldPos());
+		java.awt.Point screenPos=ev.getPoint();
+		AffineTransform screenToWorld=this.getScreenToWorldTransform();
+		
+	}
+	
+	private void displaySelectedFeature(Set<FeatureId> selectedIds) {
+		Style style=null;
+		
+		if(selectedIds.isEmpty()) {
+			style=createDefaultStyle();
+		}
+		else {
+			style=createSelectedStyle();
+		}
+		Layer layer=this.getMapContent().layers().get(0);
+		((FeatureLayer) layer).setStyle(style);
+		this.repaint();
+		
+	}
+	
+	private Style createDefaultStyle() {
+		Rule rule = createRule(Color.BLACK, Color.BLUE);
+
+        FeatureTypeStyle fts = sf.createFeatureTypeStyle();
+        fts.rules().add(rule);
+
+        Style style = sf.createStyle();
+        style.featureTypeStyles().add(fts);
+        return style;
+	}
+	
+	private Style createSelectedStyle() {
+		Rule rule = createRule(Color.RED, Color.YELLOW);
+
+        FeatureTypeStyle fts = sf.createFeatureTypeStyle();
+        fts.rules().add(rule);
+
+        Style style = sf.createStyle();
+        style.featureTypeStyles().add(fts);
+        return style;
+	}
+	
+	private Rule createRule(Color outlineColor,Color fillColor) {
+		Symbolizer symbolizer = null;
+        Fill fill = null;
+        Stroke stroke = sf.createStroke(ff.literal(outlineColor), ff.literal(1.0f));
+        fill = sf.createFill(ff.literal(fillColor), ff.literal(0.25f));
+        symbolizer = sf.createPolygonSymbolizer(stroke, fill, "polygon");
+        
+        Rule rule = sf.createRule();
+        rule.symbolizers().add(symbolizer);
+        return rule;
+	}
 
 	public void onMouseClicked(MapMouseEvent ev) {
-		// TODO Auto-generated method stub
-		
+		selectFeature(ev);
 	}
 
 	public void onMouseDragged(MapMouseEvent ev) {
