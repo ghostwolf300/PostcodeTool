@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+
 import com.ptool.controller.DefaultController;
 
 
@@ -14,11 +16,11 @@ public class PToolFrame extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JPanel centerPane;
 	
-	private DefaultController controller;
+	private JPanel centerPane;
 	private PostcodePane leftPanel;
-	private AreaPane rightPanel;
+	private JSplitPane mainSplit;
+	private DefaultController controller;
 	
 	public PToolFrame(DefaultController controller) {
 		super();
@@ -32,9 +34,10 @@ public class PToolFrame extends JFrame {
 		//Dimension screenSize=Toolkit.getDefaultToolkit().getScreenSize();
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		getContentPane().setLayout(new BorderLayout(0, 0));
-		getContentPane().add(getLeftPanel(), BorderLayout.WEST);
-		getContentPane().add(getCenterPane(), BorderLayout.CENTER);
-		getContentPane().add(getRightPanel(),BorderLayout.EAST);
+		//getContentPane().add(getLeftPanel(), BorderLayout.WEST);
+		//getContentPane().add(getCenterPane(), BorderLayout.CENTER);
+		//getContentPane().add(getRightPanel(),BorderLayout.EAST);
+		getContentPane().add(getMainSplit(), BorderLayout.CENTER);
 		
 	}
 	
@@ -45,19 +48,19 @@ public class PToolFrame extends JFrame {
 		return leftPanel;
 	}
 	
-	private AreaPane getRightPanel() {
-		if (rightPanel == null) {
-			rightPanel = new AreaPane(controller);
-		}
-		return rightPanel;
-	}
-	
 	private JPanel getCenterPane() {
 		if (centerPane == null) {
 			//centerPane = new JPanel();
-			centerPane=new PostcodeMapPane(controller);
+			centerPane=new CenterPanel(controller);
 		}
 		return centerPane;
+	}
+
+	private JSplitPane getMainSplit() {
+		if(mainSplit==null) {
+			mainSplit=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,getLeftPanel(),getCenterPane());
+		}
+		return mainSplit;
 	}
 	
 }

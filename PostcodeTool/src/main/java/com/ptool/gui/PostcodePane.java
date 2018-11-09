@@ -11,6 +11,7 @@ import com.ptool.controller.DefaultController;
 import com.ptool.model.PostcodeModel;
 import com.ptool.pojo.PostcodeTO;
 
+import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
@@ -41,6 +42,10 @@ public class PostcodePane extends JPanel implements IView,ListSelectionListener 
 		add(getFldSearchPostcode(), "cell 0 0,growx");
 		add(getBtnSearchPostcode(), "cell 1 0,aligny bottom");
 		add(getScrollPane(), "cell 0 1 2 1,grow");
+		Dimension pd=this.getPreferredSize();
+		pd.width=400;
+		this.setPreferredSize(pd);
+		
 	}
 
 	private JTextField getFldSearchPostcode() {
@@ -78,6 +83,7 @@ public class PostcodePane extends JPanel implements IView,ListSelectionListener 
 			PostcodeListModel model=(PostcodeListModel) list.getModel();
 			List<PostcodeTO> postcodes=(List<PostcodeTO>) pce.getNewValue();
 			model.setPostcodes(postcodes);
+			System.out.println("Postcodes here");
 		}
 		else if(pce.getPropertyName().equals(PostcodeModel.P_SELECTED)) {
 			

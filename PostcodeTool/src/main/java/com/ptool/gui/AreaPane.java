@@ -9,11 +9,15 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 
 import com.ptool.controller.DefaultController;
+import com.ptool.model.AreaModel;
+import com.ptool.pojo.PostcodeTO;
 
 import javax.swing.ImageIcon;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
+import java.util.List;
 
 import javax.swing.Box;
 import net.miginfocom.swing.MigLayout;
@@ -57,6 +61,15 @@ public class AreaPane extends JPanel implements IView {
 	private void initialize() {
 		setLayout(new BorderLayout(0, 0));
 		add(getSplitPane(), BorderLayout.CENTER);
+		Dimension pd=this.getPreferredSize();
+		pd.width=400;
+		this.setPreferredSize(pd);
+		Dimension maxd=this.getMaximumSize();
+		maxd.width=400;
+		this.setMaximumSize(maxd);
+		Dimension mind=this.getMinimumSize();
+		mind.width=400;
+		this.setMinimumSize(mind);
 	}
 	private JSplitPane getSplitPane() {
 		if (splitPane == null) {
@@ -222,7 +235,11 @@ public class AreaPane extends JPanel implements IView {
 	}
 
 	public void modelPropertyChange(PropertyChangeEvent pce) {
-		// TODO Auto-generated method stub
+		if(pce.getPropertyName().equals(AreaModel.P_POSTCODES)) {
+			List<PostcodeTO> postcodes=(List<PostcodeTO>) pce.getNewValue();
+			PostcodeListModel model=(PostcodeListModel) list.getModel();
+			model.setPostcodes(postcodes);
+		}
 		
 	}
 }

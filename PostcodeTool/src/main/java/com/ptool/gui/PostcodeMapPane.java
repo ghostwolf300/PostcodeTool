@@ -1,6 +1,7 @@
 package com.ptool.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,7 +15,9 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JSplitPane;
 
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -87,7 +90,12 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 	}
 	
 	private void initialize() {
-		
+		Dimension pd=this.getPreferredSize();
+		pd.width=800;
+		this.setPreferredSize(pd);
+		/*Dimension md=this.getMinimumSize();
+		md.width=800;
+		this.setMinimumSize(md);*/
 		this.setBackground(Color.GREEN);
 		
 		this.setMapContent(getMap());
@@ -421,8 +429,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("Popup menu item clicked");
-		
+		controller.addPostcodeToArea();
 	}
 
 	

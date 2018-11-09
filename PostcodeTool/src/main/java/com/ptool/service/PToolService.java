@@ -88,4 +88,16 @@ public class PToolService {
 		//TODO: implement update/insert
 	}
 	
+	public void addPostcodeToArea() {
+		AreaTO area=areaModel.getSelectedArea();
+		if(area==null) {
+			area=new AreaTO();
+			areaModel.setSelectedArea(area);
+		}
+		if(postcodeModel.getSelectedPostcode()!=null) {
+			areaModel.addPostcode(postcodeModel.getSelectedPostcode());
+		}
+		
+	}
+	
 }

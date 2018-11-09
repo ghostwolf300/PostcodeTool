@@ -31,4 +31,8 @@ public class DefaultController extends AbstractController {
 		service.selectPostcode(postcode);
 	}
 	
+	public void addPostcodeToArea() {
+		service.addPostcodeToArea();
+	}
+	
 }

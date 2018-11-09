@@ -8,6 +8,10 @@ import com.ptool.pojo.PostcodeTO;
 
 public class PostcodeListModel extends AbstractListModel<PostcodeTO> {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<PostcodeTO> postcodes=null;
 	private PostcodeTO selectedItem;
 	
@@ -21,7 +25,7 @@ public class PostcodeListModel extends AbstractListModel<PostcodeTO> {
 
 	public void setPostcodes(List<PostcodeTO> postcodes) {
 		this.postcodes = postcodes;
-		
+		this.fireContentsChanged(this, 0, this.postcodes.size()-1);
 	}
 
 	public PostcodeTO getElementAt(int index) {
