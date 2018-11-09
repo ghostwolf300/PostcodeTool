@@ -6,18 +6,26 @@ import java.awt.BorderLayout;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.ptool.controller.DefaultController;
 import com.ptool.model.AreaModel;
+import com.ptool.pojo.AreaTO;
 import com.ptool.pojo.PostcodeTO;
 
 import javax.swing.ImageIcon;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.Box;
 import net.miginfocom.swing.MigLayout;
@@ -27,7 +35,11 @@ import java.awt.Color;
 import javax.swing.JSlider;
 import javax.swing.JList;
 
-public class AreaPane extends JPanel implements IView {
+public class AreaPane extends JPanel implements IView,ActionListener,ChangeListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JSplitPane splitPane;
 	private JPanel topPane;
 	private JPanel bottomPane;
@@ -50,7 +62,8 @@ public class AreaPane extends JPanel implements IView {
 	private JScrollPane scrollPane;
 	private JList list;
 	private DefaultController controller=null;
-	
+	private JButton btnSave;
+	private AreaTO area=null;
 	
 	public AreaPane(DefaultController controller) {
 		this.controller=controller;
@@ -102,6 +115,7 @@ public class AreaPane extends JPanel implements IView {
 			toolBar = new JToolBar();
 			toolBar.setFloatable(false);
 			toolBar.add(getBtnNew());
+			toolBar.add(getBtnSave());
 			toolBar.add(getBtnPrevious());
 			toolBar.add(getBtnNext());
 			toolBar.add(Box.createHorizontalGlue());
@@ -113,6 +127,8 @@ public class AreaPane extends JPanel implements IView {
 		if (btnPrevious == null) {
 			btnPrevious = new JButton("");
 			btnPrevious.setIcon(new ImageIcon(AreaPane.class.getResource("/toolbarButtonGraphics/navigation/Back24.gif")));
+			btnPrevious.setActionCommand("PREV");
+			btnPrevious.addActionListener(this);
 		}
 		return btnPrevious;
 	}
@@ -120,6 +136,8 @@ public class AreaPane extends JPanel implements IView {
 		if (btnNext == null) {
 			btnNext = new JButton("");
 			btnNext.setIcon(new ImageIcon(AreaPane.class.getResource("/toolbarButtonGraphics/navigation/Forward24.gif")));
+			btnNext.setActionCommand("NEXT");
+			btnNext.addActionListener(this);
 		}
 		return btnNext;
 	}
@@ -127,13 +145,27 @@ public class AreaPane extends JPanel implements IView {
 		if (btnNew == null) {
 			btnNew = new JButton("");
 			btnNew.setIcon(new ImageIcon(AreaPane.class.getResource("/toolbarButtonGraphics/general/New24.gif")));
+			btnNew.setActionCommand("NEW");
+			btnNew.addActionListener(this);
 		}
 		return btnNew;
 	}
+	private JButton getBtnSave() {
+		if (btnSave == null) {
+			btnSave = new JButton("");
+			btnSave.setIcon(new ImageIcon(AreaPane.class.getResource("/toolbarButtonGraphics/general/Save24.gif")));
+			btnSave.setActionCommand("SAVE");
+			btnSave.addActionListener(this);
+		}
+		return btnSave;
+	}
+
 	private JButton getBtnDelete() {
 		if (btnDelete == null) {
 			btnDelete = new JButton("");
 			btnDelete.setIcon(new ImageIcon(AreaPane.class.getResource("/toolbarButtonGraphics/general/Delete24.gif")));
+			btnDelete.setActionCommand("DEL");
+			btnDelete.addActionListener(this);
 		}
 		return btnDelete;
 	}
@@ -171,12 +203,19 @@ public class AreaPane extends JPanel implements IView {
 	private JButton getBtnBackground() {
 		if (btnBackground == null) {
 			btnBackground = new JButton("Background");
+			btnBackground.setActionCommand("BACKGROUND");
+			btnBackground.addActionListener(this);
 		}
 		return btnBackground;
 	}
 	private JSlider getSliderTransparency() {
 		if (sliderTransparency == null) {
 			sliderTransparency = new JSlider();
+			sliderTransparency.setMinimum(10);
+			sliderTransparency.setMaximum(100);
+			sliderTransparency.setMajorTickSpacing(5);
+			sliderTransparency.setSnapToTicks(true);
+			sliderTransparency.addChangeListener(this);
 		}
 		return sliderTransparency;
 	}
@@ -190,12 +229,15 @@ public class AreaPane extends JPanel implements IView {
 		if (fldTransparency == null) {
 			fldTransparency = new JTextField();
 			fldTransparency.setColumns(10);
+			fldTransparency.setEditable(false);
 		}
 		return fldTransparency;
 	}
 	private JButton getBtnLine() {
 		if (btnLine == null) {
 			btnLine = new JButton("Line");
+			btnLine.setActionCommand("LINE");
+			btnLine.addActionListener(this);
 		}
 		return btnLine;
 	}
@@ -208,6 +250,11 @@ public class AreaPane extends JPanel implements IView {
 	private JSlider getSliderThickness() {
 		if (sliderThickness == null) {
 			sliderThickness = new JSlider();
+			sliderThickness.setMinimum(10);
+			sliderThickness.setMaximum(50);
+			sliderThickness.setMajorTickSpacing(5);
+			sliderThickness.setSnapToTicks(true);
+			sliderThickness.addChangeListener(this);
 		}
 		return sliderThickness;
 	}
@@ -215,6 +262,7 @@ public class AreaPane extends JPanel implements IView {
 		if (fldThickness == null) {
 			fldThickness = new JTextField();
 			fldThickness.setColumns(10);
+			fldThickness.setEditable(false);
 		}
 		return fldThickness;
 	}
@@ -234,12 +282,49 @@ public class AreaPane extends JPanel implements IView {
 		return list;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void modelPropertyChange(PropertyChangeEvent pce) {
 		if(pce.getPropertyName().equals(AreaModel.P_POSTCODES)) {
-			List<PostcodeTO> postcodes=(List<PostcodeTO>) pce.getNewValue();
+			Set<PostcodeTO> postcodes=(Set<PostcodeTO>) pce.getNewValue();
 			PostcodeListModel model=(PostcodeListModel) list.getModel();
-			model.setPostcodes(postcodes);
+			model.setPostcodes(new ArrayList<PostcodeTO>(postcodes));
+		}
+		else if(pce.getPropertyName().equals(AreaModel.P_SELECTED)) {
+			AreaTO area=(AreaTO)pce.getNewValue();
+			fldName.setText(area.getName());
+			btnBackground.setBackground(Color.decode(area.getBackgroundColor()));
+			btnLine.setBackground(Color.decode(area.getLineColor()));
+			fldTransparency.setText(Double.toString(area.getTransparency()));
+			sliderTransparency.setValue((int) (100*area.getTransparency()));
+			fldThickness.setText(Double.toString(area.getLineThickness()));
+			sliderThickness.setValue((int)(area.getLineThickness()*10));
+			this.area=area;
 		}
 		
 	}
+
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().equals(btnBackground)) {
+			Color background=JColorChooser.showDialog(null,"Background Color",btnBackground.getBackground());
+			btnBackground.setBackground(background);
+		}
+		else if(e.getSource().equals(btnLine)) {
+			Color line=JColorChooser.showDialog(null,"Line Color",btnLine.getBackground());
+			btnLine.setBackground(line);
+		}
+		
+	}
+
+	public void stateChanged(ChangeEvent e) {
+		if(e.getSource().equals(sliderTransparency)) {
+			double transparency=sliderTransparency.getValue()/100.0;
+			fldTransparency.setText(Double.toString(transparency));
+		}
+		else if(e.getSource().equals(sliderThickness)) {
+			double thickness=sliderThickness.getValue();
+			fldThickness.setText(Double.toString(thickness/10.0));
+		}
+		
+	}
+	
 }

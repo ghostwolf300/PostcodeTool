@@ -1,6 +1,7 @@
 package com.ptool.service;
 
 import java.util.List;
+import java.util.Set;
 
 import com.ptool.db.DAOFactory;
 import com.ptool.db.IAreaDAO;
@@ -76,6 +77,10 @@ public class PToolService {
 		postcodeModel.setSelectedPostcode(postcode);
 	}
 	
+	public void selectPostcodes(Set<PostcodeTO> postcodes) {
+		postcodeModel.setSelectedPostcodes(postcodes);
+	}
+	
 	public void selectArea(AreaTO area) {
 		areaModel.setSelectedArea(area);
 	}
@@ -88,14 +93,16 @@ public class PToolService {
 		//TODO: implement update/insert
 	}
 	
-	public void addPostcodeToArea() {
+	public void addPostcodesToArea() {
 		AreaTO area=areaModel.getSelectedArea();
 		if(area==null) {
 			area=new AreaTO();
 			areaModel.setSelectedArea(area);
 		}
-		if(postcodeModel.getSelectedPostcode()!=null) {
-			areaModel.addPostcode(postcodeModel.getSelectedPostcode());
+		if(postcodeModel.getSelectedPostcodes()!=null) {
+			System.out.println("Service: adding postcodes to area");
+			areaModel.addPostcodes(postcodeModel.getSelectedPostcodes());
+			
 		}
 		
 	}

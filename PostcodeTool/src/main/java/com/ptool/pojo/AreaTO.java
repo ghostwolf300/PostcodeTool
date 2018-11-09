@@ -1,17 +1,19 @@
 package com.ptool.pojo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class AreaTO {
 	
 	private int id=-1;
-	private String name=null;
-	private String backgroundColor=null;
-	private String lineColor=null;
+	private String name="<New>";
+	private String backgroundColor="#FC33FF";
+	private String lineColor="#FF0000";
 	private double lineThickness=1.0;
 	private double transparency=0.25;
-	private List<PostcodeTO> postcodes=null;
+	private Set<PostcodeTO> postcodes=null;
 	
 	public AreaTO() {
 		
@@ -21,7 +23,7 @@ public class AreaTO {
 		this.name=name;
 	}
 	
-	public AreaTO(String name, List<PostcodeTO> postcodes) {
+	public AreaTO(String name, Set<PostcodeTO> postcodes) {
 		this.name=name;
 		this.postcodes=postcodes;
 	}
@@ -74,19 +76,26 @@ public class AreaTO {
 		this.transparency = transparency;
 	}
 
-	public List<PostcodeTO> getPostcodes() {
+	public Set<PostcodeTO> getPostcodes() {
 		return postcodes;
 	}
 
-	public void setPostcodes(List<PostcodeTO> postcodes) {
+	public void setPostcodes(Set<PostcodeTO> postcodes) {
 		this.postcodes = postcodes;
 	}
 	
 	public void addPostcode(PostcodeTO postcode) {
 		if(postcodes==null) {
-			postcodes=new ArrayList<PostcodeTO>();
+			postcodes=new HashSet<PostcodeTO>();
 		}
 		postcodes.add(postcode);
+	}
+	
+	public void addPostcodes(Set<PostcodeTO> postcodes) {
+		if(this.postcodes==null) {
+			this.postcodes=new HashSet<PostcodeTO>();
+		}
+		this.postcodes.addAll(postcodes);
 	}
 	
 	public boolean isNew() {

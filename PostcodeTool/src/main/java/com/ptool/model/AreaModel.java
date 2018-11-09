@@ -1,6 +1,7 @@
 package com.ptool.model;
 
 import java.util.List;
+import java.util.Set;
 
 import com.ptool.pojo.AreaTO;
 import com.ptool.pojo.PostcodeTO;
@@ -39,6 +40,14 @@ public class AreaModel extends AbstractModel {
 	public void addPostcode(PostcodeTO postcode) {
 		if(selectedArea!=null) {
 			selectedArea.addPostcode(postcode);
+			this.firePropertyChange(AreaModel.P_POSTCODES, null, selectedArea.getPostcodes());
+		}
+	}
+	
+	public void addPostcodes(Set<PostcodeTO> postcodes) {
+		if(selectedArea!=null) {
+			selectedArea.addPostcodes(postcodes);
+			System.out.println("AreaModel selected postcodes: "+selectedArea.getPostcodes().size());
 			this.firePropertyChange(AreaModel.P_POSTCODES, null, selectedArea.getPostcodes());
 		}
 	}

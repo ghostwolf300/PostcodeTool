@@ -1,7 +1,9 @@
 package com.ptool;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jdom2.Document;
 import org.json.simple.JSONArray;
@@ -138,7 +140,7 @@ public class PTool {
 		
 		IPostcodeDAO pcDao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getPostcodeDAO();
 		List<PostcodeTO> postcodes=pcDao.findAllPostcodes(1);
-		List<PostcodeTO> insidePostcodes=new ArrayList<PostcodeTO>();
+		Set<PostcodeTO> insidePostcodes=new HashSet<PostcodeTO>();
 		
 		for(Polygon p : polygons) {
 			for(PostcodeTO postcode : postcodes) {

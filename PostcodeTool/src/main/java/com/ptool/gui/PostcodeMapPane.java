@@ -136,15 +136,17 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 			updateMapContent((List<PostcodeTO>) pce.getNewValue());
 		}
 		else if(pce.getPropertyName().equals(PostcodeModel.P_SELECTED)) {
-			highlightSelected((PostcodeTO)pce.getNewValue());
+			highlightSelected((Set<PostcodeTO>)pce.getNewValue());
 		}
 		
 	}
 	
-	private void highlightSelected(PostcodeTO postcode) {
+	private void highlightSelected(Set<PostcodeTO> postcodes) {
 		Set<FeatureId> selectedIds=new HashSet<FeatureId>();
-		for(PolygonTO pcPoly : postcode.getPolygons()) {
-			selectedIds.add(ff.featureId(pcPoly.toString()));
+		for(PostcodeTO pc : postcodes) {
+			for(PolygonTO pcPoly : pc.getPolygons()) {
+				selectedIds.add(ff.featureId(pcPoly.toString()));
+			}
 		}
 		System.out.println("Displaying: "+selectedIds.size());
 		this.displaySelectedFeatures(selectedIds);
@@ -268,6 +270,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 		builder.add("polygon", Polygon.class);
 		builder.add("postcode", String.class);
 		builder.add("name",String.class);
+		builder.add("pcObject",PostcodeTO.class);
 
 		// build the type
 		SimpleFeatureType TYPE = builder.buildFeatureType();
@@ -283,6 +286,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 				featureBuilder.add(pcPoly.getGeometryPolygon());
 				featureBuilder.add(pc.getPostcode());
 				featureBuilder.add(pc.getName());
+				featureBuilder.add(pc);
 				SimpleFeature feature=featureBuilder.buildFeature(pcPoly.toString());
 				features.add(feature);
 			}
@@ -310,14 +314,18 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 		
 		Layer layer=this.getMapContent().layers().get(0);
 		Set<FeatureId> selectedIds=null;
+		Set<PostcodeTO> selectedPostcodes=null;
 		try {
 			SimpleFeatureCollection selectedFeatures=(SimpleFeatureCollection)layer.getFeatureSource().getFeatures(filter);
 			System.out.println("you selected #: "+selectedFeatures.size());
 			SimpleFeatureIterator iter=selectedFeatures.features();
 			selectedIds=new HashSet<FeatureId>();
+			selectedPostcodes=new HashSet<PostcodeTO>();
 			while(iter.hasNext()) {
 				SimpleFeature feature=iter.next();
+				PostcodeTO pc=(PostcodeTO) feature.getAttribute("pcObject");
 				selectedIds.add(feature.getIdentifier());
+				selectedPostcodes.add(pc);
 				System.out.println(feature.getIdentifier());
 			}
 			
@@ -327,7 +335,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 		}
 		
 		if(selectedIds!=null && !selectedIds.isEmpty()) {
-			displaySelectedFeatures(selectedIds);
+			controller.setSelectedPostcodes(selectedPostcodes);
 		}
 		
 	}
@@ -429,7 +437,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		controller.addPostcodeToArea();
+		controller.addPostcodesToArea();
 	}
 
 	

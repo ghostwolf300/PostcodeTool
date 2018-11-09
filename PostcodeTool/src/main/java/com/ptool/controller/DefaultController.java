@@ -1,5 +1,9 @@
 package com.ptool.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import com.ptool.pojo.PostcodeTO;
 import com.ptool.service.PToolService;
 
@@ -31,8 +35,13 @@ public class DefaultController extends AbstractController {
 		service.selectPostcode(postcode);
 	}
 	
-	public void addPostcodeToArea() {
-		service.addPostcodeToArea();
+	public void setSelectedPostcodes(Set<PostcodeTO> pcSet) {
+		service.selectPostcodes(pcSet);
+	}
+	
+	public void addPostcodesToArea() {
+		System.out.println("Controller: addPostcodesToArea");
+		service.addPostcodesToArea();
 	}
 	
 }

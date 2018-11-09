@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Set;
 
 import com.ptool.pojo.AreaTO;
 import com.ptool.pojo.PostcodeTO;
@@ -71,7 +72,7 @@ public class DerbyAreaDAO implements IAreaDAO {
 		
 	}
 	
-	private void insertAreaPostcodes(int id,List<PostcodeTO> postcodes) {
+	private void insertAreaPostcodes(int id,Set<PostcodeTO> postcodes) {
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
 		String sqlInsertAreaPC="insert into tbl_area_postcodes(area_id,postcode) values(?,?)";
