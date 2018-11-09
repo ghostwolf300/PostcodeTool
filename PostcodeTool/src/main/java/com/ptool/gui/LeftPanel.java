@@ -79,6 +79,9 @@ public class LeftPanel extends JPanel implements IView,ListSelectionListener {
 			List<PostcodeTO> postcodes=(List<PostcodeTO>) pce.getNewValue();
 			model.setPostcodes(postcodes);
 		}
+		else if(pce.getPropertyName().equals(PostcodeModel.P_SELECTED)) {
+			
+		}
 		
 	}
 
@@ -87,7 +90,7 @@ public class LeftPanel extends JPanel implements IView,ListSelectionListener {
 			int index=lse.getLastIndex();
 			PostcodeListModel model=(PostcodeListModel) list.getModel();
 			PostcodeTO postcode=model.getElementAt(index);
-			System.out.println(postcode);
+			controller.setSelectedPostcode(postcode);
 			
 		}
 	}

@@ -36,3 +36,8 @@ select count(*) from tbl_coordinates;
 select count(*) from tbl_coordinates where ring_id in 
 (select ring_id from tbl_postcode_polygons a join tbl_polygon_rings b on a.polygon_id=b.polygon_id where a.map_id=101);
 
+select map_id,postcode,name from tbl_postcode where postcode='74940';
+select * from TBL_POSTCODE_POLYGONS where postcode='74940';
+select * from tbl_polygon_rings where polygon_id=7852;
+select * from tbl_coordinates where ring_id=7974;
+

@@ -65,6 +65,11 @@ public class PolygonTO {
 		}
 		return holes;
 	}
+
+	@Override
+	public String toString() {
+		return Integer.toString(id);
+	}
 	
 	
 }
