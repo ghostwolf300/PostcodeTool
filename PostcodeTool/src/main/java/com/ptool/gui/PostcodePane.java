@@ -18,7 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
 
-public class LeftPanel extends JPanel implements IView,ListSelectionListener {
+public class PostcodePane extends JPanel implements IView,ListSelectionListener {
 	/**
 	 * 
 	 */
@@ -29,7 +29,7 @@ public class LeftPanel extends JPanel implements IView,ListSelectionListener {
 	private JList list;
 	private DefaultController controller=null;
 	
-	public LeftPanel(DefaultController controller) {
+	public PostcodePane(DefaultController controller) {
 		super();
 		this.controller=controller;
 		this.controller.addView(this);

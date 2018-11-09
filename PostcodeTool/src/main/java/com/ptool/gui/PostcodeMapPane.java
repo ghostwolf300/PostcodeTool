@@ -2,6 +2,8 @@ package com.ptool.gui;
 
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
@@ -10,6 +12,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -49,7 +54,6 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
-import org.opengis.filter.identity.Identifier;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -61,7 +65,7 @@ import com.ptool.pojo.MapDataTO;
 import com.ptool.pojo.PolygonTO;
 import com.ptool.pojo.PostcodeTO;
 
-public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
+public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,ActionListener{
 
 	/**
 	 * 
@@ -73,6 +77,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 	private MapDataTO mapData=null;
 	private FilterFactory2 ff=null;
 	private StyleFactory sf=null;
+	private JPopupMenu popup=null;
 	
 	public PostcodeMapPane(DefaultController controller) {
 		super();
@@ -92,6 +97,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 		ff=CommonFactoryFinder.getFilterFactory2();
 		sf=CommonFactoryFinder.getStyleFactory();
 		
+		this.createPopup();
 		this.addMouseListener(this);
 		this.addMouseListener(new ScrollWheelTool(this));
 	}
@@ -102,6 +108,13 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 			map.setTitle("Testi");
 		}
 		return map;
+	}
+	
+	private void createPopup() {
+		popup=new JPopupMenu();
+		JMenuItem itemAddToArea=new JMenuItem("Add to area");
+		itemAddToArea.addActionListener(this);
+		popup.add(itemAddToArea);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -396,12 +409,19 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener{
 	}
 
 	public void onMouseReleased(MapMouseEvent ev) {
-		// TODO Auto-generated method stub
+		if(ev.isPopupTrigger()) {
+			popup.show(ev.getComponent(), ev.getX(), ev.getY());
+		}
 		
 	}
 
 	public void onMouseWheelMoved(MapMouseEvent ev) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		System.out.println("Popup menu item clicked");
 		
 	}
 

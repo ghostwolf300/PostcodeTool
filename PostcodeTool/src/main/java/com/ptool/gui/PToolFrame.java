@@ -17,7 +17,8 @@ public class PToolFrame extends JFrame {
 	private JPanel centerPane;
 	
 	private DefaultController controller;
-	private LeftPanel leftPanel;
+	private PostcodePane leftPanel;
+	private AreaPane rightPanel;
 	
 	public PToolFrame(DefaultController controller) {
 		super();
@@ -33,13 +34,22 @@ public class PToolFrame extends JFrame {
 		getContentPane().setLayout(new BorderLayout(0, 0));
 		getContentPane().add(getLeftPanel(), BorderLayout.WEST);
 		getContentPane().add(getCenterPane(), BorderLayout.CENTER);
+		getContentPane().add(getRightPanel(),BorderLayout.EAST);
+		
 	}
 	
-	private LeftPanel getLeftPanel() {
+	private PostcodePane getLeftPanel() {
 		if (leftPanel == null) {
-			leftPanel = new LeftPanel(controller);
+			leftPanel = new PostcodePane(controller);
 		}
 		return leftPanel;
+	}
+	
+	private AreaPane getRightPanel() {
+		if (rightPanel == null) {
+			rightPanel = new AreaPane(controller);
+		}
+		return rightPanel;
 	}
 	
 	private JPanel getCenterPane() {
