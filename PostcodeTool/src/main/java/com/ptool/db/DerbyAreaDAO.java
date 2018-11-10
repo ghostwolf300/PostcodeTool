@@ -1,13 +1,16 @@
 package com.ptool.db;
 
+import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.ptool.pojo.AreaStyleTO;
 import com.ptool.pojo.AreaTO;
 import com.ptool.pojo.PostcodeTO;
 
@@ -36,10 +39,10 @@ public class DerbyAreaDAO implements IAreaDAO {
 		try {
 			pstmnt=conn.prepareStatement(sqlInsertArea,Statement.RETURN_GENERATED_KEYS);
 			pstmnt.setString(1, area.getName());
-			pstmnt.setString(2, area.getBackgroundColor());
-			pstmnt.setString(3, area.getLineColor());
-			pstmnt.setDouble(4, area.getLineThickness());
-			pstmnt.setDouble(5, area.getTransparency());
+			pstmnt.setString(2, AreaStyleTO.toHexString(area.getStyle().getBackgroundColor()));
+			pstmnt.setString(3, AreaStyleTO.toHexString(area.getStyle().getLineColor()));
+			pstmnt.setDouble(4, area.getStyle().getLineThickness());
+			pstmnt.setDouble(5, area.getStyle().getTransparency());
 			pstmnt.executeUpdate();
 			rs=pstmnt.getGeneratedKeys();
 			if(rs.next()) {
@@ -104,15 +107,35 @@ public class DerbyAreaDAO implements IAreaDAO {
 		
 	}
 	
-	public List<AreaTO> findAllAreas() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<AreaTO> findAllMapAreas(int mapId) {
+		Connection conn=DerbyDAOFactory.createConnection();
+		PreparedStatement pstmnt=null;
+		ResultSet rs=null;
+		String sqlFindAllAreas="select id,map_id,name,color_background,color_line,line_thickness,transparency "
+				+ "from tbl_area where map_id=?";
+		List<AreaTO> areas=null;
+		
+		try {
+			pstmnt=conn.prepareStatement(sqlFindAllAreas);
+			pstmnt.setInt(1, mapId);
+			rs=pstmnt.executeQuery();
+			areas=new ArrayList<AreaTO>();
+			while(rs.next()) {
+				areas.add(createArea(rs));
+			}
+		} 
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return areas;
 	}
 
 	public AreaTO findAreaById(int id) {
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
-		String sqlFindAreaById="select id,name,color_background,color_line,line_thickness,transparency "
+		String sqlFindAreaById="select id,map_id,name,color_background,color_line,line_thickness,transparency "
 				+ "from tbl_area where id=?";
 		ResultSet rs=null;
 		AreaTO area=null;
@@ -121,13 +144,7 @@ public class DerbyAreaDAO implements IAreaDAO {
 			pstmnt.setInt(1, id);
 			rs=pstmnt.executeQuery();
 			if(rs.next()) {
-				area=new AreaTO();
-				area.setId(rs.getInt("id"));
-				area.setName(rs.getString("name"));
-				area.setBackgroundColor(rs.getString("color_background"));
-				area.setLineColor(rs.getString("color_line"));
-				area.setLineThickness(rs.getDouble("line_thickness"));
-				area.setTransparency(rs.getDouble("transparency"));
+				area=createArea(rs);
 			}
 		} 
 		catch (SQLException e) {
@@ -152,6 +169,20 @@ public class DerbyAreaDAO implements IAreaDAO {
 	public void deleteArea(int id) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private AreaTO createArea(ResultSet rs) throws SQLException {
+		AreaTO area=new AreaTO();
+		area.setId(rs.getInt("id"));
+		area.setMapId(rs.getInt("map_id"));
+		area.setName(rs.getString("name"));
+		AreaStyleTO style=new AreaStyleTO();
+		style.setBackgroundColor(Color.decode(rs.getString("color_background")));
+		style.setLineColor(Color.decode(rs.getString("color_line")));
+		style.setTransparency(rs.getDouble("line_thickness"));
+		style.setLineThickness(rs.getDouble("line_thickness"));
+		area.setStyle(style);
+		return area;
 	}
 
 }

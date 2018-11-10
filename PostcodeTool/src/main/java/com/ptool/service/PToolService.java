@@ -10,6 +10,7 @@ import com.ptool.db.IPostcodeDAO;
 import com.ptool.model.AreaModel;
 import com.ptool.model.MapModel;
 import com.ptool.model.PostcodeModel;
+import com.ptool.pojo.AreaStyleTO;
 import com.ptool.pojo.AreaTO;
 import com.ptool.pojo.MapDataTO;
 import com.ptool.pojo.PostcodeTO;
@@ -68,8 +69,8 @@ public class PToolService {
 		postcodeModel.setPostcodes(postcodes);
 	}
 	
-	public void loadAreas() {
-		List<AreaTO> areas=areaDAO.findAllAreas();
+	public void loadAreas(int mapId) {
+		List<AreaTO> areas=areaDAO.findAllMapAreas(mapId);
 		areaModel.setAreas(areas);
 	}
 	
@@ -89,14 +90,31 @@ public class PToolService {
 		//TODO: implement update/insert
 	}
 	
-	public void saveSelectedArea() {
+	public void saveArea(AreaTO area) {
 		//TODO: implement update/insert
+		if(area.isNew()) {
+			//save to database
+			//NOTE: this is a temp fix for testing
+			area.setId(1);
+			area.setMapId(101);
+			areaModel.addArea(area);
+		}
+		else {
+			areaModel.refresh();
+		}
+	}
+	
+	public void removeArea(AreaTO area) {
+		//TODO: implement delete
+		areaModel.removeArea(area);
 	}
 	
 	public void addPostcodesToArea() {
 		AreaTO area=areaModel.getSelectedArea();
 		if(area==null) {
 			area=new AreaTO();
+			AreaStyleTO style=new AreaStyleTO();
+			area.setStyle(style);
 			areaModel.setSelectedArea(area);
 		}
 		if(postcodeModel.getSelectedPostcodes()!=null) {

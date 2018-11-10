@@ -1,5 +1,6 @@
 package com.ptool;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,7 @@ import com.ptool.kml.KMLReader;
 import com.ptool.kml.KMLUtil;
 import com.ptool.kml.KMLWriter;
 import com.ptool.net.NetUtil;
+import com.ptool.pojo.AreaStyleTO;
 import com.ptool.pojo.AreaTO;
 import com.ptool.pojo.PostcodeTO;
 
@@ -158,8 +160,10 @@ public class PTool {
 		
 		IAreaDAO areaDao=DAOFactory.getDAOFactory(DAOFactory.DERBY).getAreaDAO();
 		AreaTO myArea=new AreaTO("Rajaustesti 05112018");
-		myArea.setBackgroundColor("#FF3642");
-		myArea.setTransparency(0.15);
+		AreaStyleTO style=new AreaStyleTO();
+		style.setBackgroundColor(Color.decode("#FF3642"));
+		style.setTransparency(0.15);
+		myArea.setStyle(style);
 		myArea.setPostcodes(insidePostcodes);
 		areaDao.saveArea(myArea);
 		

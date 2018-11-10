@@ -8,12 +8,11 @@ import java.util.Set;
 public class AreaTO {
 	
 	private int id=-1;
+	private int mapId=-1;
 	private String name="<New>";
-	private String backgroundColor="#FC33FF";
-	private String lineColor="#FF0000";
-	private double lineThickness=1.0;
-	private double transparency=0.25;
 	private Set<PostcodeTO> postcodes=null;
+	private AreaStyleTO style=null;
+	private boolean selected=false;
 	
 	public AreaTO() {
 		
@@ -36,44 +35,20 @@ public class AreaTO {
 		this.id = id;
 	}
 
+	public int getMapId() {
+		return mapId;
+	}
+
+	public void setMapId(int mapId) {
+		this.mapId = mapId;
+	}
+
 	public String getName() {
 		return name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getBackgroundColor() {
-		return backgroundColor;
-	}
-
-	public void setBackgroundColor(String backgroundColor) {
-		this.backgroundColor = backgroundColor;
-	}
-
-	public String getLineColor() {
-		return lineColor;
-	}
-
-	public void setLineColor(String lineColor) {
-		this.lineColor = lineColor;
-	}
-
-	public double getLineThickness() {
-		return lineThickness;
-	}
-
-	public void setLineThickness(double lineThickness) {
-		this.lineThickness = lineThickness;
-	}
-
-	public double getTransparency() {
-		return transparency;
-	}
-
-	public void setTransparency(double transparency) {
-		this.transparency = transparency;
 	}
 
 	public Set<PostcodeTO> getPostcodes() {
@@ -98,6 +73,22 @@ public class AreaTO {
 		this.postcodes.addAll(postcodes);
 	}
 	
+	public AreaStyleTO getStyle() {
+		return style;
+	}
+
+	public void setStyle(AreaStyleTO style) {
+		this.style = style;
+	}
+
+	public boolean isSelected() {
+		return selected;
+	}
+
+	public void setSelected(boolean selected) {
+		this.selected = selected;
+	}
+
 	public boolean isNew() {
 		if(id==-1) {
 			return true;

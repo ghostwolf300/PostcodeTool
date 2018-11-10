@@ -13,6 +13,7 @@ import javax.swing.event.ChangeListener;
 
 import com.ptool.controller.DefaultController;
 import com.ptool.model.AreaModel;
+import com.ptool.pojo.AreaStyleTO;
 import com.ptool.pojo.AreaTO;
 import com.ptool.pojo.PostcodeTO;
 
@@ -24,6 +25,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +42,7 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private JSplitPane splitPane;
+	private JSplitPane splitArea;
 	private JPanel topPane;
 	private JPanel bottomPane;
 	private JToolBar toolBar;
@@ -63,6 +65,9 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 	private JList list;
 	private DefaultController controller=null;
 	private JButton btnSave;
+	private JPanel areaListPane=null;
+	private JSplitPane splitMain;
+	
 	private AreaTO area=null;
 	
 	public AreaPane(DefaultController controller) {
@@ -73,7 +78,6 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 	
 	private void initialize() {
 		setLayout(new BorderLayout(0, 0));
-		add(getSplitPane(), BorderLayout.CENTER);
 		Dimension pd=this.getPreferredSize();
 		pd.width=400;
 		this.setPreferredSize(pd);
@@ -83,15 +87,34 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 		Dimension mind=this.getMinimumSize();
 		mind.width=400;
 		this.setMinimumSize(mind);
+		add(getSplitMain(), BorderLayout.CENTER);
 	}
-	private JSplitPane getSplitPane() {
-		if (splitPane == null) {
-			splitPane = new JSplitPane();
-			splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-			splitPane.setLeftComponent(getTopPane());
-			splitPane.setRightComponent(getBottomPane());
+	private JSplitPane getSplitMain() {
+		if (splitMain == null) {
+			splitMain = new JSplitPane();
+			splitMain.setOrientation(JSplitPane.VERTICAL_SPLIT);
+			splitMain.setTopComponent(getAreaListPane());
+			splitMain.setBottomComponent(getSplitArea());
+			
 		}
-		return splitPane;
+		return splitMain;
+	}
+	
+	private JPanel getAreaListPane() {
+		if(areaListPane==null) {
+			areaListPane=new AreaListPane(controller);
+		}
+		return areaListPane;
+	}
+
+	private JSplitPane getSplitArea() {
+		if (splitArea == null) {
+			splitArea = new JSplitPane();
+			splitArea.setOrientation(JSplitPane.VERTICAL_SPLIT);
+			splitArea.setLeftComponent(getTopPane());
+			splitArea.setRightComponent(getBottomPane());
+		}
+		return splitArea;
 	}
 	private JPanel getTopPane() {
 		if (topPane == null) {
@@ -281,6 +304,27 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 		}
 		return list;
 	}
+	
+	private void createNewArea() {
+		area=new AreaTO();
+		AreaStyleTO style=new AreaStyleTO();;
+		area.setStyle(style);
+		fldName.setText(area.getName());
+		btnBackground.setBackground(style.getBackgroundColor());
+		btnLine.setBackground(style.getLineColor());
+		fldTransparency.setText(Double.toString(style.getTransparency()));
+		sliderTransparency.setValue((int) (100*style.getTransparency()));
+		fldThickness.setText(Double.toString(style.getLineThickness()));
+		sliderThickness.setValue((int)(style.getLineThickness()*10));
+	}
+	
+	private void updateArea() {
+		area.setName(fldName.getText());
+		area.getStyle().setBackgroundColor(btnBackground.getBackground());
+		area.getStyle().setLineColor(btnLine.getBackground());
+		area.getStyle().setTransparency(Double.valueOf(fldTransparency.getText()));
+		area.getStyle().setLineThickness(Double.valueOf(fldThickness.getText()));
+	}
 
 	@SuppressWarnings("unchecked")
 	public void modelPropertyChange(PropertyChangeEvent pce) {
@@ -290,15 +334,17 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 			model.setPostcodes(new ArrayList<PostcodeTO>(postcodes));
 		}
 		else if(pce.getPropertyName().equals(AreaModel.P_SELECTED)) {
-			AreaTO area=(AreaTO)pce.getNewValue();
+			area=(AreaTO)pce.getNewValue();
+			AreaStyleTO style=area.getStyle();
 			fldName.setText(area.getName());
-			btnBackground.setBackground(Color.decode(area.getBackgroundColor()));
-			btnLine.setBackground(Color.decode(area.getLineColor()));
-			fldTransparency.setText(Double.toString(area.getTransparency()));
-			sliderTransparency.setValue((int) (100*area.getTransparency()));
-			fldThickness.setText(Double.toString(area.getLineThickness()));
-			sliderThickness.setValue((int)(area.getLineThickness()*10));
-			this.area=area;
+			btnBackground.setBackground(style.getBackgroundColor());
+			btnLine.setBackground(style.getLineColor());
+			fldTransparency.setText(Double.toString(style.getTransparency()));
+			sliderTransparency.setValue((int) (100*style.getTransparency()));
+			fldThickness.setText(Double.toString(style.getLineThickness()));
+			sliderThickness.setValue((int)(style.getLineThickness()*10));
+			
+			((PostcodeListModel)list.getModel()).setPostcodes(new ArrayList<PostcodeTO>(area.getPostcodes()));
 		}
 		
 	}
@@ -311,6 +357,16 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 		else if(e.getSource().equals(btnLine)) {
 			Color line=JColorChooser.showDialog(null,"Line Color",btnLine.getBackground());
 			btnLine.setBackground(line);
+		}
+		else if(e.getSource().equals(btnNew)) {
+			createNewArea();
+		}
+		else if(e.getSource().equals(btnSave)) {
+			updateArea();
+			controller.saveArea(area);
+		}
+		else if(e.getSource().equals(btnDelete)) {
+			controller.removeArea(area);
 		}
 		
 	}
@@ -326,5 +382,4 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 		}
 		
 	}
-	
 }

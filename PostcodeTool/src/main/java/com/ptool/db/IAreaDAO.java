@@ -7,7 +7,7 @@ import com.ptool.pojo.AreaTO;
 public interface IAreaDAO {
 	
 	public void saveArea(AreaTO area);
-	public List<AreaTO> findAllAreas();
+	public List<AreaTO> findAllMapAreas(int mapId);
 	public AreaTO findAreaById(int id);
 	public void deleteArea(int id);
 	

@@ -1,5 +1,6 @@
 package com.ptool.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +28,22 @@ public class AreaModel extends AbstractModel {
 		this.areas = areas;
 		this.firePropertyChange(AreaModel.P_AREAS, null, this.areas);
 	}
-
+	
+	public void addArea(AreaTO area) {
+		if(areas==null) {
+			areas=new ArrayList<AreaTO>();
+		}
+		areas.add(area);
+		this.firePropertyChange(AreaModel.P_AREAS, null, areas);
+	}
+	
+	public void removeArea(AreaTO area) {
+		if(areas!=null) {
+			areas.remove(area);
+			this.firePropertyChange(AreaModel.P_AREAS, null, areas);
+		}
+	}
+	
 	public AreaTO getSelectedArea() {
 		return selectedArea;
 	}
@@ -56,6 +72,10 @@ public class AreaModel extends AbstractModel {
 		if(selectedArea!=null) {
 			
 		}
+	}
+	
+	public void refresh() {
+		this.firePropertyChange(AreaModel.P_AREAS, null, areas);
 	}
 	
 }
