@@ -112,10 +112,15 @@ public class AreaListPane extends JPanel implements IView,TableModelListener,Lis
 	}
 
 	public void tableChanged(TableModelEvent e) {
-		if(e.getType()==TableModelEvent.UPDATE) {
-			System.out.println("Table changed"+e.getType());
+		if(e.getColumn()==0) {
+			AreaTO area=((AreaListTableModel)e.getSource()).getAreaAtRow(e.getLastRow());
+			if(area.isSelected()) {
+				controller.showArea(area);
+			}
+			else {
+				controller.hideArea(area);
+			}
 		}
-		
 	}
 
 	public void valueChanged(ListSelectionEvent e) {

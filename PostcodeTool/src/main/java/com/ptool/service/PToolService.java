@@ -137,4 +137,12 @@ public class PToolService {
 		
 	}
 	
+	public void showArea(AreaTO area) {
+		areaModel.showArea(area);
+	}
+	
+	public void hideArea(AreaTO area) {
+		areaModel.hideArea(area);
+	}
+	
 }

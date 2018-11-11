@@ -58,4 +58,12 @@ public class DefaultController extends AbstractController {
 		service.removeArea(area);
 	}
 	
+	public void showArea(AreaTO area) {
+		service.showArea(area);
+	}
+	
+	public void hideArea(AreaTO area) {
+		service.hideArea(area);
+	}
+	
 }

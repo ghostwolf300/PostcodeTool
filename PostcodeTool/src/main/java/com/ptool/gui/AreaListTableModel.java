@@ -62,6 +62,7 @@ public class AreaListTableModel extends AbstractTableModel {
 		if(col==COL_SHOW) {
 			boolean show=(Boolean) value;
 			areas.get(row).setSelected(show);
+			this.fireTableCellUpdated(row, col);
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package com.ptool.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,9 +13,11 @@ public class AreaModel extends AbstractModel {
 	public static final String P_AREAS="p_areas";
 	public static final String P_SELECTED="p_selected_area";
 	public static final String P_POSTCODES="p_area_postcodes";
+	public static final String P_DISPLAYED_AREAS="p_displayed_areas";
 	
 	private List<AreaTO> areas=null;
 	private AreaTO selectedArea=null;
+	private Set<AreaTO> displayedAreas=null;
 	
 	public AreaModel() {
 		super();
@@ -42,6 +45,19 @@ public class AreaModel extends AbstractModel {
 			areas.remove(area);
 			this.firePropertyChange(AreaModel.P_AREAS, null, areas);
 		}
+	}
+	
+	public void showArea(AreaTO area) {
+		if(displayedAreas==null) {
+			displayedAreas=new HashSet<AreaTO>();
+		}
+		displayedAreas.add(area);
+		this.firePropertyChange(AreaModel.P_DISPLAYED_AREAS, null, displayedAreas);
+	}
+	
+	public void hideArea(AreaTO area) {
+		displayedAreas.remove(area);
+		this.firePropertyChange(AreaModel.P_DISPLAYED_AREAS, null, displayedAreas);
 	}
 	
 	public AreaTO getSelectedArea() {

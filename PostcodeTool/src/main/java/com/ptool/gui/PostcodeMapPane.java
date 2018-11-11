@@ -62,8 +62,10 @@ import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.ptool.controller.DefaultController;
+import com.ptool.model.AreaModel;
 import com.ptool.model.MapModel;
 import com.ptool.model.PostcodeModel;
+import com.ptool.pojo.AreaTO;
 import com.ptool.pojo.MapDataTO;
 import com.ptool.pojo.PolygonTO;
 import com.ptool.pojo.PostcodeTO;
@@ -123,22 +125,6 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 		JMenuItem itemAddToArea=new JMenuItem("Add to area");
 		itemAddToArea.addActionListener(this);
 		popup.add(itemAddToArea);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void modelPropertyChange(PropertyChangeEvent pce) {
-		if(pce.getPropertyName().equals(MapModel.P_MAP_DATA)) {
-			System.out.println("received map data...");
-			updateDisplayArea((MapDataTO) pce.getNewValue());
-		}
-		else if(pce.getPropertyName().equals(PostcodeModel.P_POSTCODES)) {
-			System.out.println("received postcodes...");
-			updateMapContent((List<PostcodeTO>) pce.getNewValue());
-		}
-		else if(pce.getPropertyName().equals(PostcodeModel.P_SELECTED)) {
-			highlightSelected((Set<PostcodeTO>)pce.getNewValue());
-		}
-		
 	}
 	
 	private void highlightSelected(Set<PostcodeTO> postcodes) {
@@ -393,6 +379,36 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
         Rule rule = sf.createRule();
         rule.symbolizers().add(symbolizer);
         return rule;
+	}
+	
+	private void showAreas(Set<AreaTO> areas) {
+		if(areas==null || areas.size()==0) {
+			System.out.println("no areas selected");
+		}
+		else {
+			System.out.println("show "+areas.size()+" areas");
+		}
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	public void modelPropertyChange(PropertyChangeEvent pce) {
+		if(pce.getPropertyName().equals(MapModel.P_MAP_DATA)) {
+			System.out.println("received map data...");
+			updateDisplayArea((MapDataTO) pce.getNewValue());
+		}
+		else if(pce.getPropertyName().equals(PostcodeModel.P_POSTCODES)) {
+			System.out.println("received postcodes...");
+			updateMapContent((List<PostcodeTO>) pce.getNewValue());
+		}
+		else if(pce.getPropertyName().equals(PostcodeModel.P_SELECTED)) {
+			highlightSelected((Set<PostcodeTO>)pce.getNewValue());
+		}
+		else if(pce.getPropertyName().equals(AreaModel.P_DISPLAYED_AREAS)) {
+			Set<AreaTO> areas=(Set<AreaTO>) pce.getNewValue();
+			showAreas(areas);
+		}
+		
 	}
 
 	public void onMouseClicked(MapMouseEvent ev) {
