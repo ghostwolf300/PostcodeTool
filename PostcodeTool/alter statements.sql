@@ -1,3 +1,4 @@
+
 alter table tbl_coordinates drop constraint fk_coordinates_ring_id;
 alter table tbl_coordinates drop constraint fk_coordinates_map_id;
 alter table tbl_coordinates drop constraint pk_coordinates;
@@ -31,3 +32,6 @@ alter table tbl_area_postcodes drop primary key;
 alter table tbl_area_postcodes drop constraint fk_area_postcodes_postcode;
 alter table tbl_area_postcodes add column map_id int not null default 101;
 alter table tbl_area_postcodes add constraint pk_area_postcodes primary key(area_id,postcode,map_id);
+
+alter table tbl_area add column map_id int not null default 101;
+alter table tbl_area add constraint fk_area_map_id foreign key(map_id) references tbl_map on delete cascade on update restrict;

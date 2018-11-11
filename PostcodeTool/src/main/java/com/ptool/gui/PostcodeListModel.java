@@ -22,10 +22,15 @@ public class PostcodeListModel extends AbstractListModel<PostcodeTO> {
 	public List<PostcodeTO> getPostcodes() {
 		return postcodes;
 	}
-
+	
 	public void setPostcodes(List<PostcodeTO> postcodes) {
 		this.postcodes = postcodes;
-		this.fireContentsChanged(this, 0, this.postcodes.size()-1);
+		if(this.postcodes==null) {
+			this.fireContentsChanged(this, 0, 0);
+		}
+		else {
+			this.fireContentsChanged(this, 0, this.postcodes.size()-1);
+		}
 	}
 
 	public PostcodeTO getElementAt(int index) {

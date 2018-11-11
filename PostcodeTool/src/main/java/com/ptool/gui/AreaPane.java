@@ -324,6 +324,10 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 		area.getStyle().setLineColor(btnLine.getBackground());
 		area.getStyle().setTransparency(Double.valueOf(fldTransparency.getText()));
 		area.getStyle().setLineThickness(Double.valueOf(fldThickness.getText()));
+		List<PostcodeTO> postcodes=((PostcodeListModel)list.getModel()).getPostcodes();
+		if(postcodes!=null) {
+			area.setPostcodes(new HashSet<PostcodeTO>(postcodes));
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -343,8 +347,13 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 			sliderTransparency.setValue((int) (100*style.getTransparency()));
 			fldThickness.setText(Double.toString(style.getLineThickness()));
 			sliderThickness.setValue((int)(style.getLineThickness()*10));
+			if(area.getPostcodes()==null) {
+				((PostcodeListModel)list.getModel()).setPostcodes(null);
+			}
+			else {
+				((PostcodeListModel)list.getModel()).setPostcodes(new ArrayList<PostcodeTO>(area.getPostcodes()));
+			}
 			
-			((PostcodeListModel)list.getModel()).setPostcodes(new ArrayList<PostcodeTO>(area.getPostcodes()));
 		}
 		
 	}

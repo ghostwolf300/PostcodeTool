@@ -47,6 +47,7 @@ public class PTool {
 		PToolFrame gui=new PToolFrame(controller);
 		controller.loadMap();
 		controller.loadPostcodes();
+		controller.loadAreas();
 		gui.setVisible(true);
 		
 

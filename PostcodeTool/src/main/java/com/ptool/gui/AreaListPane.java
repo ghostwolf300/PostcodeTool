@@ -91,6 +91,7 @@ public class AreaListPane extends JPanel implements IView,TableModelListener,Lis
 			table.getColumnModel().getColumn(0).setCellEditor(table.getDefaultEditor(Boolean.class));
 			table.getColumnModel().getColumn(2).setCellRenderer(new StyleRenderer());
 			table.getSelectionModel().addListSelectionListener(this);
+			table.getModel().addTableModelListener(this);
 			//((AreaListTableModel)table.getModel()).setAreas(getTestAreas());
 		}
 		return table;
@@ -112,7 +113,7 @@ public class AreaListPane extends JPanel implements IView,TableModelListener,Lis
 
 	public void tableChanged(TableModelEvent e) {
 		if(e.getType()==TableModelEvent.UPDATE) {
-			
+			System.out.println("Table changed"+e.getType());
 		}
 		
 	}
@@ -120,8 +121,10 @@ public class AreaListPane extends JPanel implements IView,TableModelListener,Lis
 	public void valueChanged(ListSelectionEvent e) {
 		if(!e.getValueIsAdjusting()) {
 			int row=table.getSelectedRow();
-			AreaTO area=((AreaListTableModel)table.getModel()).getAreaAtRow(row);
-			controller.setSelectedArea(area);
+			if(row!=-1) {
+				AreaTO area=((AreaListTableModel)table.getModel()).getAreaAtRow(row);
+				controller.setSelectedArea(area);
+			}
 		}
 		
 	}

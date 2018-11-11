@@ -83,6 +83,9 @@ public class PToolService {
 	}
 	
 	public void selectArea(AreaTO area) {
+		if(area==null) {
+			System.out.println("area is null!");
+		}
 		areaModel.setSelectedArea(area);
 	}
 	
@@ -92,20 +95,29 @@ public class PToolService {
 	
 	public void saveArea(AreaTO area) {
 		//TODO: implement update/insert
+		
 		if(area.isNew()) {
 			//save to database
-			//NOTE: this is a temp fix for testing
-			area.setId(1);
-			area.setMapId(101);
+			System.out.println("Service: Creating new area");
+			area.setMapId(mapModel.getMapData().getId());
+			areaDAO.saveArea(area);
 			areaModel.addArea(area);
 		}
 		else {
+			if(area.getPostcodes()==null) {
+				System.out.println("Service: Updating area, no postcodes!");
+			}
+			else {
+				System.out.println("Service: Updating area");
+			}
+			areaDAO.saveArea(area);
 			areaModel.refresh();
 		}
 	}
 	
 	public void removeArea(AreaTO area) {
 		//TODO: implement delete
+		areaDAO.removeArea(area.getId());
 		areaModel.removeArea(area);
 	}
 	
