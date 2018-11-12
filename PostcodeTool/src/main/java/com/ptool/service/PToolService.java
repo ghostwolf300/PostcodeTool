@@ -1,5 +1,6 @@
 package com.ptool.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -71,6 +72,10 @@ public class PToolService {
 	
 	public void loadAreas(int mapId) {
 		List<AreaTO> areas=areaDAO.findAllMapAreas(mapId);
+		for(AreaTO area : areas) {
+			List<PostcodeTO> postcodes=postcodeDAO.findPostcodesByAreaId(area.getId(), mapId);
+			area.setPostcodes(new HashSet<PostcodeTO>(postcodes));
+		}
 		areaModel.setAreas(areas);
 	}
 	

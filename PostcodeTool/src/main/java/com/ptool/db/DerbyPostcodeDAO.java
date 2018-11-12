@@ -386,7 +386,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 
 	public List<PostcodeTO> findPostcodesByAreaId(int areaId,int mapId) {
 		String sqlFindPostcodesByAreaId="select a.postcode,a.name from tbl_postcode a "
-				+ "join tbl_area_postcodes b on a.postcode=b.postcode where b.area_id=?";
+				+ "join tbl_area_postcodes b on a.postcode=b.postcode and a.map_id=b.map_id where b.area_id=?";
 		
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
@@ -401,6 +401,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 			rsPostcodes=pstmnt.executeQuery();
 			while(rsPostcodes.next()) {
 				pc=new PostcodeTO();
+				pc.setMapId(mapId);
 				pc.setPostcode(rsPostcodes.getString("postcode"));
 				pc.setName(rsPostcodes.getString("name"));
 				pc.setPolygons(getPolygons(pc.getPostcode(),mapId,conn));

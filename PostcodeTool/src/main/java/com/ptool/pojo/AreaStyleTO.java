@@ -19,7 +19,14 @@ public class AreaStyleTO {
 		this.transparency = transparency;
 		this.lineThickness = lineThickness;
 	}
-
+	
+	public AreaStyleTO(AreaStyleTO copyStyle) {
+		this.backgroundColor=copyStyle.backgroundColor;
+		this.lineColor=copyStyle.lineColor;
+		this.transparency=copyStyle.transparency;
+		this.lineThickness=copyStyle.lineThickness;
+	}
+	
 	public Color getBackgroundColor() {
 		return backgroundColor;
 	}

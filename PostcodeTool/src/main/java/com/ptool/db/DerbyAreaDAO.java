@@ -124,7 +124,8 @@ public class DerbyAreaDAO implements IAreaDAO {
 			areas=new ArrayList<AreaTO>();
 			while(rs.next()) {
 				AreaTO area=createArea(rs);
-				addPostcodesToArea(area,conn);
+				//TODO: use postcodeDAO to retrieve postcode data
+				//addPostcodesToArea(area,conn);
 				areas.add(area);
 			}
 		} 

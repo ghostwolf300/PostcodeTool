@@ -32,6 +32,14 @@ public class PostcodeListModel extends AbstractListModel<PostcodeTO> {
 			this.fireContentsChanged(this, 0, this.postcodes.size()-1);
 		}
 	}
+	
+	public void remove(PostcodeTO postcode) {
+		if(postcodes!=null) {
+			int index=postcodes.indexOf(postcode);
+			postcodes.remove(postcode);
+			this.fireIntervalRemoved(this, index, index);
+		}
+	}
 
 	public PostcodeTO getElementAt(int index) {
 		if(postcodes!=null) {

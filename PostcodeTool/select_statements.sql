@@ -41,5 +41,6 @@ select * from TBL_POSTCODE_POLYGONS where postcode='74940';
 select * from tbl_polygon_rings where polygon_id=7852;
 select * from tbl_coordinates where ring_id=7974;
 
-select * from tbl_area_postcodes;
+select a.postcode,a.name from tbl_postcode a
+join tbl_area_postcodes b on a.postcode=b.postcode and a.map_id=b.map_id where b.area_id=302;
 

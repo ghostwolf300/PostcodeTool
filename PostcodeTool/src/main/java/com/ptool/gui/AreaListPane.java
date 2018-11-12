@@ -21,6 +21,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.geotools.swing.MapLayerTable;
+import org.geotools.swing.MapPane;
+
 public class AreaListPane extends JPanel implements IView,TableModelListener,ListSelectionListener {
 	/**
 	 * 
@@ -29,6 +32,7 @@ public class AreaListPane extends JPanel implements IView,TableModelListener,Lis
 	private JScrollPane scrollPane;
 	private DefaultController controller=null;
 	private JTable table;
+	private MapPane map=null;
 	
 	public AreaListPane() {
 		super();
@@ -50,6 +54,7 @@ public class AreaListPane extends JPanel implements IView,TableModelListener,Lis
 	private JScrollPane getScrollPane() {
 		if (scrollPane == null) {
 			scrollPane = new JScrollPane();
+			//scrollPane.setViewportView(getTable());
 			scrollPane.setViewportView(getTable());
 		}
 		return scrollPane;
@@ -90,13 +95,16 @@ public class AreaListPane extends JPanel implements IView,TableModelListener,Lis
 			table.getColumnModel().getColumn(0).setCellRenderer(table.getDefaultRenderer(Boolean.class));
 			table.getColumnModel().getColumn(0).setCellEditor(table.getDefaultEditor(Boolean.class));
 			table.getColumnModel().getColumn(2).setCellRenderer(new StyleRenderer());
+			table.getColumnModel().getColumn(0).setMaxWidth(30);
+			table.getColumnModel().getColumn(1).setPreferredWidth(300);
+			table.getColumnModel().getColumn(2).setPreferredWidth(100);
 			table.getSelectionModel().addListSelectionListener(this);
 			table.getModel().addTableModelListener(this);
 			//((AreaListTableModel)table.getModel()).setAreas(getTestAreas());
 		}
 		return table;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public void modelPropertyChange(PropertyChangeEvent pce) {
 		if(pce.getPropertyName().equals(AreaModel.P_AREAS)) {

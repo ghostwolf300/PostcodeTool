@@ -7,7 +7,6 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
-import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -18,11 +17,11 @@ import com.ptool.pojo.AreaTO;
 import com.ptool.pojo.PostcodeTO;
 
 import javax.swing.ImageIcon;
-import java.awt.Component;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,7 +36,7 @@ import java.awt.Color;
 import javax.swing.JSlider;
 import javax.swing.JList;
 
-public class AreaPane extends JPanel implements IView,ActionListener,ChangeListener {
+public class AreaPane extends JPanel implements IView,ActionListener,ChangeListener, KeyListener {
 	/**
 	 * 
 	 */
@@ -46,8 +45,6 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 	private JPanel topPane;
 	private JPanel bottomPane;
 	private JToolBar toolBar;
-	private JButton btnPrevious;
-	private JButton btnNext;
 	private JButton btnNew;
 	private JButton btnDelete;
 	private JPanel areaDataPane;
@@ -69,6 +66,11 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 	private JSplitPane splitMain;
 	
 	private AreaTO area=null;
+	private JButton btnCopy;
+	
+	public AreaPane() {
+		initialize();
+	}
 	
 	public AreaPane(DefaultController controller) {
 		this.controller=controller;
@@ -138,31 +140,12 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 			toolBar = new JToolBar();
 			toolBar.setFloatable(false);
 			toolBar.add(getBtnNew());
+			toolBar.add(getBtnCopy());
 			toolBar.add(getBtnSave());
-			toolBar.add(getBtnPrevious());
-			toolBar.add(getBtnNext());
 			toolBar.add(Box.createHorizontalGlue());
 			toolBar.add(getBtnDelete());
 		}
 		return toolBar;
-	}
-	private JButton getBtnPrevious() {
-		if (btnPrevious == null) {
-			btnPrevious = new JButton("");
-			btnPrevious.setIcon(new ImageIcon(AreaPane.class.getResource("/toolbarButtonGraphics/navigation/Back24.gif")));
-			btnPrevious.setActionCommand("PREV");
-			btnPrevious.addActionListener(this);
-		}
-		return btnPrevious;
-	}
-	private JButton getBtnNext() {
-		if (btnNext == null) {
-			btnNext = new JButton("");
-			btnNext.setIcon(new ImageIcon(AreaPane.class.getResource("/toolbarButtonGraphics/navigation/Forward24.gif")));
-			btnNext.setActionCommand("NEXT");
-			btnNext.addActionListener(this);
-		}
-		return btnNext;
 	}
 	private JButton getBtnNew() {
 		if (btnNew == null) {
@@ -173,6 +156,16 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 		}
 		return btnNew;
 	}
+	private JButton getBtnCopy() {
+		if (btnCopy == null) {
+			btnCopy = new JButton("");
+			btnCopy.setIcon(new ImageIcon(AreaPane.class.getResource("/toolbarButtonGraphics/general/Copy24.gif")));
+			btnCopy.setActionCommand("COPY");
+			btnCopy.addActionListener(this);
+		}
+		return btnCopy;
+	}
+
 	private JButton getBtnSave() {
 		if (btnSave == null) {
 			btnSave = new JButton("");
@@ -301,6 +294,7 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 			list = new JList();
 			PostcodeListModel model=new PostcodeListModel();
 			list.setModel(model);
+			list.addKeyListener(this);
 		}
 		return list;
 	}
@@ -316,6 +310,12 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 		sliderTransparency.setValue((int) (100*style.getTransparency()));
 		fldThickness.setText(Double.toString(style.getLineThickness()));
 		sliderThickness.setValue((int)(style.getLineThickness()*10));
+		((PostcodeListModel)list.getModel()).setPostcodes(null);
+	}
+	
+	private void copyArea() {
+		area=new AreaTO(area);
+		fldName.setText(area.getName());
 	}
 	
 	private void updateArea() {
@@ -329,7 +329,7 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 			area.setPostcodes(new HashSet<PostcodeTO>(postcodes));
 		}
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public void modelPropertyChange(PropertyChangeEvent pce) {
 		if(pce.getPropertyName().equals(AreaModel.P_POSTCODES)) {
@@ -370,12 +370,16 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 		else if(e.getSource().equals(btnNew)) {
 			createNewArea();
 		}
+		else if(e.getSource().equals(btnCopy)) {
+			copyArea();
+		}
 		else if(e.getSource().equals(btnSave)) {
 			updateArea();
 			controller.saveArea(area);
 		}
 		else if(e.getSource().equals(btnDelete)) {
 			controller.removeArea(area);
+			createNewArea();
 		}
 		
 	}
@@ -389,6 +393,25 @@ public class AreaPane extends JPanel implements IView,ActionListener,ChangeListe
 			double thickness=sliderThickness.getValue();
 			fldThickness.setText(Double.toString(thickness/10.0));
 		}
+		
+	}
+
+	public void keyPressed(KeyEvent e) {
+		System.out.println("Got keyevent : "+e.getKeyCode());
+		if(e.getKeyCode()==KeyEvent.VK_DELETE) {
+			PostcodeTO pc=(PostcodeTO) list.getSelectedValue();
+			if(pc!=null) {
+				((PostcodeListModel)list.getModel()).remove(pc);
+			}
+		}
+		
+	}
+
+	public void keyReleased(KeyEvent e) {
+		
+	}
+
+	public void keyTyped(KeyEvent e) {
 		
 	}
 }

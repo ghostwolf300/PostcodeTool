@@ -10,8 +10,10 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JMenuItem;
@@ -65,6 +67,7 @@ import com.ptool.controller.DefaultController;
 import com.ptool.model.AreaModel;
 import com.ptool.model.MapModel;
 import com.ptool.model.PostcodeModel;
+import com.ptool.pojo.AreaStyleTO;
 import com.ptool.pojo.AreaTO;
 import com.ptool.pojo.MapDataTO;
 import com.ptool.pojo.PolygonTO;
@@ -80,6 +83,8 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 	private DefaultController controller=null;
 	private MapContent map=null;
 	private MapDataTO mapData=null;
+	private Layer postcodeLayer=null;
+	private Map<String,Layer> areaLayers=null;
 	private FilterFactory2 ff=null;
 	private StyleFactory sf=null;
 	private JPopupMenu popup=null;
@@ -141,65 +146,108 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 	private void updateDisplayArea(MapDataTO mapData) {
 		this.mapData=mapData;
 		System.out.println(mapData);
-		/*CoordinateReferenceSystem crs=DefaultGeographicCRS.WGS84;
-		ReferencedEnvelope bounds=new ReferencedEnvelope(mapData.getMinX(),mapData.getMaxX(),mapData.getMinY(),mapData.getMaxY(),crs);
-		this.setDisplayArea(bounds);*/
-		
-		//map.addLayer(getBoundingBoxLayer());
+		CoordinateReferenceSystem crs=null;
+		if(mapData.getCrs().equals("urn:ogc:def:crs:EPSG::4326")) {
+			crs=DefaultGeographicCRS.WGS84;
+		}
+		else {
+			try {
+				crs=CRS.decode(mapData.getCrs());
+			} 
+			catch (NoSuchAuthorityCodeException e) {
+				e.printStackTrace();
+			} 
+			catch (FactoryException e) {
+				e.printStackTrace();
+			}
+		} 
+		ReferencedEnvelope bounds = new ReferencedEnvelope(mapData.getMinX(),mapData.getMaxX(),mapData.getMinY(),mapData.getMaxY(), crs);
+		this.setDisplayArea(bounds);
+		//map.layers().add(0, getBoundingBoxLayer());
+		map.addLayer(getBoundingBoxLayer());
 	}
 	
 	private void updateMapContent(List<PostcodeTO> postcodes) {
 		
-		/*CoordinateReferenceSystem crs=DefaultGeographicCRS.WGS84;
-		ReferencedEnvelope bounds=new ReferencedEnvelope(mapData.getMinX(),mapData.getMaxX(),mapData.getMinY(),mapData.getMaxY(),crs);
-		this.setDisplayArea(bounds);*/
-		
-		map.addLayer(getPostcodeLayer(postcodes));
+		postcodeLayer=getPostcodeLayer(postcodes);
+		//map.layers().add(1, postcodeLayer);
+		map.addLayer(postcodeLayer);
 		
 	}
 	
-	private Layer getPointLayer() {
-		
-		double x=60.29954942;
-		double y=24.97964102;
-
+	private SimpleFeatureTypeBuilder getPolygonTypeBuilder() {
 		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-		builder.setName("MyFeatureType");
-		builder.setCRS(DefaultGeographicCRS.WGS84); // set crs        
-		builder.add("location", Point.class);
-
+		builder.setName("PolygonType");
+		CoordinateReferenceSystem crs=null;
+		if(mapData.getCrs().equals("urn:ogc:def:crs:EPSG::4326")) {
+			crs=DefaultGeographicCRS.WGS84;
+		}
+		else {
+			try {
+				crs=CRS.decode(mapData.getCrs());
+			} 
+			catch (NoSuchAuthorityCodeException e) {
+				e.printStackTrace();
+			} 
+			catch (FactoryException e) {
+				e.printStackTrace();
+			}
+		} 
+		builder.setCRS(crs);
+		builder.add("polygon",Polygon.class);
+		return builder;
+	}
+	
+	private Layer getAreaLayer(AreaTO area) {
+		
+		SimpleFeatureTypeBuilder builder = getPolygonTypeBuilder();
+		builder.add("postcode", String.class);
+		builder.add("name",String.class);
+		builder.add("pcObject",PostcodeTO.class);
+		builder.add("areaId",Integer.class);
+		
 		// build the type
 		SimpleFeatureType TYPE = builder.buildFeatureType();
 
 		// create features using the type defined
 		SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(TYPE);
-		GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-
-		Point point = geometryFactory.createPoint(new Coordinate(x, y));
-		String name="My Point";
-		int number=1;
-		
-		featureBuilder.add(point);
-		//featureBuilder.add(name);
-		//featureBuilder.add(number);
-		
 		List<SimpleFeature> features = new ArrayList<SimpleFeature>();
 		
-		SimpleFeature feature = featureBuilder.buildFeature(null);
-		features.add(feature); // Add feature 1, 2, 3, etc
-
-		Style style = SLD.createPointStyle("Star", Color.BLUE, Color.BLUE, 0.3f, 15);
-		Layer layer = new FeatureLayer(DataUtilities.collection(features), style);
-		layer.setTitle("NewPointLayer");
-		
+		for(PostcodeTO pc : area.getPostcodes()) {
+			List<PolygonTO> postcodePolygons=pc.getPolygons();
+			for(PolygonTO pcPoly : postcodePolygons) {
+				featureBuilder.add(pcPoly.getGeometryPolygon());
+				featureBuilder.add(pc.getPostcode());
+				featureBuilder.add(pc.getName());
+				featureBuilder.add(pc);
+				featureBuilder.add(area.getId());
+				SimpleFeature feature=featureBuilder.buildFeature(pcPoly.toString());
+				features.add(feature);
+			}
+		}
+		Style style=createAreaStyle(area.getStyle());
+		Layer layer = new FeatureLayer(DataUtilities.collection(features), style,"AREA");
+		areaLayers.put(String.valueOf(area.getId()), layer);
 		return layer;
 	}
 	
+	private void clearAreaLayers() {
+		System.out.println("layer count: "+map.layers().size());
+		/*if(map.layers().size()>2) {
+			for(int i=2;i<map.layers().size();i++) {
+				map.layers().remove(i);
+			}
+		}*/
+		if(areaLayers!=null) {
+			Set<String> keys=areaLayers.keySet();
+			for(String key : keys) {
+				map.removeLayer(areaLayers.get(key));
+			}
+		}
+	}
+	
 	private Layer getBoundingBoxLayer() {
-		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-		builder.setName("MyFeatureType");
-		builder.setCRS(DefaultGeographicCRS.WGS84); // set crs        
-		builder.add("rectangle",Polygon.class);
+		SimpleFeatureTypeBuilder builder = getPolygonTypeBuilder();
 
 		// build the type
 		SimpleFeatureType TYPE = builder.buildFeatureType();
@@ -221,10 +269,11 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 		
 		featureBuilder.add(bounds);
 		SimpleFeature feature=featureBuilder.buildFeature(null);
+		
 		features.add(feature);
 		
 		
-		Style style=SLD.createPolygonStyle(Color.RED, Color.WHITE, 0.25f);
+		Style style=createTransparentStyle();
 		Layer layer = new FeatureLayer(DataUtilities.collection(features), style);
 		layer.setTitle("Bounds");
 		
@@ -233,27 +282,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 	
 	private Layer getPostcodeLayer(List<PostcodeTO> postcodes) {
 		
-		SimpleFeatureTypeBuilder builder = new SimpleFeatureTypeBuilder();
-		builder.setName("MyFeatureType");
-		
-		CoordinateReferenceSystem crs=null;
-		if(mapData.getCrs().equals("urn:ogc:def:crs:EPSG::4326")) {
-			crs=DefaultGeographicCRS.WGS84;
-		}
-		else {
-			try {
-				crs=CRS.decode(mapData.getCrs());
-			} 
-			catch (NoSuchAuthorityCodeException e) {
-				e.printStackTrace();
-			} 
-			catch (FactoryException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		builder.setCRS(crs); // set crs        
-		builder.add("polygon", Polygon.class);
+		SimpleFeatureTypeBuilder builder = getPolygonTypeBuilder();
 		builder.add("postcode", String.class);
 		builder.add("name",String.class);
 		builder.add("pcObject",PostcodeTO.class);
@@ -279,10 +308,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 		}
 		//Style style=SLD.createPolygonStyle(Color.BLACK, Color.BLUE, 0.25f);
 		Style style=createDefaultStyle();
-		Layer layer = new FeatureLayer(DataUtilities.collection(features), style);
-		
-		
-		layer.setTitle("Postcodes");
+		Layer layer = new FeatureLayer(DataUtilities.collection(features), style,"POSTCODES");
 		
 		return layer;
 	}
@@ -298,11 +324,10 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 		
 		Filter filter=ff.intersects(ff.property("polygon"), ff.literal(bbox));
 		
-		Layer layer=this.getMapContent().layers().get(0);
 		Set<FeatureId> selectedIds=null;
 		Set<PostcodeTO> selectedPostcodes=null;
 		try {
-			SimpleFeatureCollection selectedFeatures=(SimpleFeatureCollection)layer.getFeatureSource().getFeatures(filter);
+			SimpleFeatureCollection selectedFeatures=(SimpleFeatureCollection)postcodeLayer.getFeatureSource().getFeatures(filter);
 			System.out.println("you selected #: "+selectedFeatures.size());
 			SimpleFeatureIterator iter=selectedFeatures.features();
 			selectedIds=new HashSet<FeatureId>();
@@ -324,6 +349,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 			controller.setSelectedPostcodes(selectedPostcodes);
 		}
 		
+		
 	}
 	
 	private void displaySelectedFeatures(Set<FeatureId> selectedIds) {
@@ -335,14 +361,29 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 		else {
 			style=createSelectedStyle(selectedIds);
 		}
-		Layer layer=this.getMapContent().layers().get(0);
-		((FeatureLayer) layer).setStyle(style);
-		//this.repaint();
-		
+		((FeatureLayer) postcodeLayer).setStyle(style);
+	}
+	
+	private Style createAreaStyle(AreaStyleTO areaStyle) {
+		Rule rule=createRule(areaStyle.getLineColor(),areaStyle.getBackgroundColor(),(float)areaStyle.getTransparency(),(float)areaStyle.getLineThickness());
+		FeatureTypeStyle fts=sf.createFeatureTypeStyle();
+		fts.rules().add(rule);
+		Style style=sf.createStyle();
+		style.featureTypeStyles().add(fts);
+		return style;
+	}
+	
+	private Style createTransparentStyle() {
+		Rule rule=createRule(Color.BLACK,Color.WHITE,0.0f,1.0f);
+		FeatureTypeStyle fts=sf.createFeatureTypeStyle();
+		fts.rules().add(rule);
+		Style style=sf.createStyle();
+		style.featureTypeStyles().add(fts);
+		return style;
 	}
 	
 	private Style createDefaultStyle() {
-		Rule rule = createRule(Color.BLACK, Color.BLUE);
+		Rule rule = createRule(Color.BLACK, Color.BLUE,1.0f,1.0f);
 
         FeatureTypeStyle fts = sf.createFeatureTypeStyle();
         fts.rules().add(rule);
@@ -355,9 +396,9 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 	
 	private Style createSelectedStyle(Set<FeatureId> selectedIds) {
 		
-		Rule selectedRule = createRule(Color.RED, Color.YELLOW);
+		Rule selectedRule = createRule(Color.RED, Color.YELLOW,1.0f,1.0f);
 		selectedRule.setFilter(ff.id(selectedIds));
-		Rule otherRule=createRule(Color.BLACK, Color.BLUE);
+		Rule otherRule=createRule(Color.BLACK, Color.BLUE,1.0f,1.0f);
 		otherRule.setElseFilter(true);
 		
         FeatureTypeStyle fts = sf.createFeatureTypeStyle();
@@ -369,11 +410,11 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
         return style;
 	}
 	
-	private Rule createRule(Color outlineColor,Color fillColor) {
+	private Rule createRule(Color outlineColor,Color fillColor,float opacity,float thickness) {
 		Symbolizer symbolizer = null;
         Fill fill = null;
-        Stroke stroke = sf.createStroke(ff.literal(outlineColor), ff.literal(1.0f));
-        fill = sf.createFill(ff.literal(fillColor), ff.literal(1.0f));
+        Stroke stroke = sf.createStroke(ff.literal(outlineColor), ff.literal(thickness));
+        fill = sf.createFill(ff.literal(fillColor), ff.literal(opacity));
         symbolizer = sf.createPolygonSymbolizer(stroke, fill, "polygon");
         
         Rule rule = sf.createRule();
@@ -384,9 +425,21 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 	private void showAreas(Set<AreaTO> areas) {
 		if(areas==null || areas.size()==0) {
 			System.out.println("no areas selected");
+			clearAreaLayers();
 		}
 		else {
-			System.out.println("show "+areas.size()+" areas");
+			if(areaLayers==null) {
+				areaLayers=new HashMap<String,Layer>();	
+			}
+			if(areaLayers.size()>0) {
+				clearAreaLayers();
+			}
+			for(AreaTO area : areas) {
+				System.out.println("show: "+area.getName());
+				if(area.getPostcodes()!=null && area.getPostcodes().size()>0) {
+					map.addLayer(getAreaLayer(area));
+				}
+			}
 		}
 		
 	}

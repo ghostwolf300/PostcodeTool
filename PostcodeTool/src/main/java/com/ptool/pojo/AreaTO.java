@@ -26,6 +26,12 @@ public class AreaTO {
 		this.name=name;
 		this.postcodes=postcodes;
 	}
+	
+	public AreaTO(AreaTO copyArea) {
+		this.mapId=copyArea.mapId;
+		this.postcodes=new HashSet<PostcodeTO>(copyArea.postcodes);
+		this.style=new AreaStyleTO(copyArea.style);
+	}
 
 	public int getId() {
 		return id;
