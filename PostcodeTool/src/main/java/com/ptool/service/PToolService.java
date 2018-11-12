@@ -142,6 +142,19 @@ public class PToolService {
 		
 	}
 	
+	public void addPostcodesToArea(Set<PostcodeTO> postcodes) {
+		AreaTO area=areaModel.getSelectedArea();
+		if(area==null) {
+			area=new AreaTO();
+			AreaStyleTO style=new AreaStyleTO();
+			area.setStyle(style);
+			areaModel.setSelectedArea(area);
+		}
+		System.out.println("Service: adding postcodes to area");
+		areaModel.addPostcodes(postcodes);
+		
+	}
+	
 	public void showArea(AreaTO area) {
 		areaModel.showArea(area);
 	}

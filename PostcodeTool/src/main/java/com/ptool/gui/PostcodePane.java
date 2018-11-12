@@ -13,7 +13,9 @@ import com.ptool.pojo.PostcodeTO;
 
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
@@ -96,7 +98,9 @@ public class PostcodePane extends JPanel implements IView,ListSelectionListener 
 			int index=lse.getLastIndex();
 			PostcodeListModel model=(PostcodeListModel) list.getModel();
 			PostcodeTO postcode=model.getElementAt(index);
-			controller.setSelectedPostcode(postcode);
+			Set<PostcodeTO> selectedSet=new HashSet<PostcodeTO>();
+			selectedSet.add(postcode);
+			controller.setSelectedPostcodes(selectedSet);
 			
 		}
 	}

@@ -17,9 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JSplitPane;
 
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -39,7 +37,6 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Rule;
-import org.geotools.styling.SLD;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
@@ -51,7 +48,6 @@ import org.geotools.swing.tool.ScrollWheelTool;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 import org.opengis.feature.simple.SimpleFeature;
@@ -88,6 +84,8 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 	private FilterFactory2 ff=null;
 	private StyleFactory sf=null;
 	private JPopupMenu popup=null;
+	
+	private Set<PostcodeTO> selectedPostcodes=null;
 	
 	public PostcodeMapPane(DefaultController controller) {
 		super();
@@ -313,7 +311,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 		return layer;
 	}
 	
-	private void selectFeature(MapMouseEvent ev) {
+	private void selectFeatures(MapMouseEvent ev) {
 		System.out.println("click at: "+ev.getWorldPos());
 		java.awt.Point screenPos=ev.getPoint();
 		Rectangle screenRect=new Rectangle(screenPos.x-2,screenPos.y-2,5,5);
@@ -325,19 +323,25 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 		Filter filter=ff.intersects(ff.property("polygon"), ff.literal(bbox));
 		
 		Set<FeatureId> selectedIds=null;
-		Set<PostcodeTO> selectedPostcodes=null;
+		
 		try {
 			SimpleFeatureCollection selectedFeatures=(SimpleFeatureCollection)postcodeLayer.getFeatureSource().getFeatures(filter);
 			System.out.println("you selected #: "+selectedFeatures.size());
 			SimpleFeatureIterator iter=selectedFeatures.features();
 			selectedIds=new HashSet<FeatureId>();
-			selectedPostcodes=new HashSet<PostcodeTO>();
+			
+			if(selectedPostcodes==null) {
+				selectedPostcodes=new HashSet<PostcodeTO>();
+			}
+			else {
+				selectedPostcodes.clear();
+			}
+			
 			while(iter.hasNext()) {
 				SimpleFeature feature=iter.next();
 				PostcodeTO pc=(PostcodeTO) feature.getAttribute("pcObject");
 				selectedIds.add(feature.getIdentifier());
 				selectedPostcodes.add(pc);
-				System.out.println(feature.getIdentifier());
 			}
 			
 		} 
@@ -458,14 +462,19 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 			highlightSelected((Set<PostcodeTO>)pce.getNewValue());
 		}
 		else if(pce.getPropertyName().equals(AreaModel.P_DISPLAYED_AREAS)) {
-			Set<AreaTO> areas=(Set<AreaTO>) pce.getNewValue();
-			showAreas(areas);
+			//Set<AreaTO> areas=(Set<AreaTO>) pce.getNewValue();
+			//showAreas(areas);
+		}
+		else if(pce.getPropertyName().equals(AreaModel.P_AREAS)) {
+			List<AreaTO> areas=(List<AreaTO>) pce.getNewValue();
+			Set<AreaTO> areaSet=new HashSet<AreaTO>(areas);
+			showAreas(areaSet);
 		}
 		
 	}
 
 	public void onMouseClicked(MapMouseEvent ev) {
-		selectFeature(ev);
+		selectFeatures(ev);
 	}
 
 	public void onMouseDragged(MapMouseEvent ev) {
@@ -506,7 +515,7 @@ public class PostcodeMapPane extends JMapPane implements IView,MapMouseListener,
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		controller.addPostcodesToArea();
+		controller.addPostcodesToArea(selectedPostcodes);
 	}
 
 	

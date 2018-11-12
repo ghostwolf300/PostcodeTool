@@ -49,6 +49,10 @@ public class DefaultController extends AbstractController {
 		service.addPostcodesToArea();
 	}
 	
+	public void addPostcodesToArea(Set<PostcodeTO> postcodes) {
+		service.addPostcodesToArea(postcodes);
+	}
+	
 	public void saveArea(AreaTO area) {
 		System.out.println("Controller: saveArea");
 		service.saveArea(area);
