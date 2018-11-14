@@ -14,7 +14,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.ptool.pojo.PostcodeTO;
+import com.ptool.pojo.MapAreaTO;
 
 public class NetUtil {
 	//http://geo.stat.fi/geoserver/postialue/wfs?request=GetFeature&typeNames=postialue:pno_meri_2018&outputFormat=json

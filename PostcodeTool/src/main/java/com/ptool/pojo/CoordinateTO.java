@@ -4,9 +4,8 @@ import org.locationtech.jts.geom.Coordinate;
 
 public class CoordinateTO {
 	
-	private int ringId;
-	private int mapId;
-	private int orderNum;
+	private int ringId=-1;
+	private int orderNum=-1;
 	private double x;
 	private double y;
 	
@@ -27,14 +26,6 @@ public class CoordinateTO {
 
 	public void setRingId(int ringId) {
 		this.ringId = ringId;
-	}
-
-	public int getMapId() {
-		return mapId;
-	}
-
-	public void setMapId(int mapId) {
-		this.mapId = mapId;
 	}
 
 	public int getOrderNum() {

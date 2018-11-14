@@ -8,7 +8,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import com.ptool.pojo.AreaStyleTO;
+import com.ptool.pojo.CollectionStyleTO;
 
 public class StyleRenderer extends JLabel implements TableCellRenderer {
 
@@ -24,7 +24,7 @@ public class StyleRenderer extends JLabel implements TableCellRenderer {
 
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
-		AreaStyleTO style=(AreaStyleTO) value;
+		CollectionStyleTO style=(CollectionStyleTO) value;
 		setBackground(style.getBackgroundColor());
 		setBorder(BorderFactory.createLineBorder(style.getLineColor(),1));
 		return this;

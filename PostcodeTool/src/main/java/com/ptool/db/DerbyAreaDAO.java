@@ -11,28 +11,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.ptool.pojo.AreaStyleTO;
-import com.ptool.pojo.AreaTO;
-import com.ptool.pojo.PostcodeTO;
+import com.ptool.pojo.CollectionStyleTO;
+import com.ptool.pojo.CollectionTO;
+import com.ptool.pojo.MapAreaTO;
 
-public class DerbyAreaDAO implements IAreaDAO {
+public class DerbyAreaDAO implements ICollectionDAO {
 
-	public void saveArea(AreaTO area) {
+	public void saveCollection(CollectionTO area) {
 		Connection conn=DerbyDAOFactory.createConnection();
 		System.out.println("AreaDAO new area="+area.isNew());
 		try {
 			if(area.isNew()) {
 				insertArea(area,conn);
-				if(area.getPostcodes()!=null && area.getPostcodes().size()>0) {
-					insertAreaPostcodes(area.getId(),area.getPostcodes(),conn);
+				if(area.getMapAreas()!=null && area.getMapAreas().size()>0) {
+					insertAreaPostcodes(area.getId(),area.getMapAreas(),conn);
 				}
 			}
 			else {
 				updateArea(area,conn);
 				deleteAreaPostcodes(area.getId(),conn);
-				System.out.println("Updating area postcode size: "+area.getPostcodes().size());
-				if(area.getPostcodes()!=null && area.getPostcodes().size()>0) {
-					insertAreaPostcodes(area.getId(),area.getPostcodes(),conn);
+				System.out.println("Updating area postcode size: "+area.getMapAreas().size());
+				if(area.getMapAreas()!=null && area.getMapAreas().size()>0) {
+					insertAreaPostcodes(area.getId(),area.getMapAreas(),conn);
 				}
 			}
 		}
@@ -51,14 +51,14 @@ public class DerbyAreaDAO implements IAreaDAO {
 
 	}
 	
-	private void insertArea(AreaTO area,Connection conn) throws SQLException {
+	private void insertArea(CollectionTO area,Connection conn) throws SQLException {
 		String sqlInsertArea="insert into tbl_area(name,color_background,color_line,line_thickness,transparency) "
 				+ "values(?,?,?,?,?)";
 		
 		PreparedStatement pstmnt=conn.prepareStatement(sqlInsertArea,Statement.RETURN_GENERATED_KEYS);
 		pstmnt.setString(1, area.getName());
-		pstmnt.setString(2, AreaStyleTO.toHexString(area.getStyle().getBackgroundColor()));
-		pstmnt.setString(3, AreaStyleTO.toHexString(area.getStyle().getLineColor()));
+		pstmnt.setString(2, CollectionStyleTO.toHexString(area.getStyle().getBackgroundColor()));
+		pstmnt.setString(3, CollectionStyleTO.toHexString(area.getStyle().getLineColor()));
 		pstmnt.setDouble(4, area.getStyle().getLineThickness());
 		pstmnt.setDouble(5, area.getStyle().getTransparency());
 		pstmnt.executeUpdate();
@@ -71,12 +71,12 @@ public class DerbyAreaDAO implements IAreaDAO {
 			
 	}
 	
-	private void updateArea(AreaTO area,Connection conn) throws SQLException {
+	private void updateArea(CollectionTO area,Connection conn) throws SQLException {
 		String sqlUpdateArea="update tbl_area set name=?,color_background=?,color_line=?,transparency=?,line_thickness=? where id=?";
 		PreparedStatement pstmnt=conn.prepareStatement(sqlUpdateArea);
 		pstmnt.setString(1, area.getName());
-		pstmnt.setString(2, AreaStyleTO.toHexString(area.getStyle().getBackgroundColor()));
-		pstmnt.setString(3, AreaStyleTO.toHexString(area.getStyle().getLineColor()));
+		pstmnt.setString(2, CollectionStyleTO.toHexString(area.getStyle().getBackgroundColor()));
+		pstmnt.setString(3, CollectionStyleTO.toHexString(area.getStyle().getLineColor()));
 		pstmnt.setDouble(4, area.getStyle().getTransparency());
 		pstmnt.setDouble(5, area.getStyle().getLineThickness());
 		pstmnt.setInt(6, area.getId());
@@ -94,14 +94,14 @@ public class DerbyAreaDAO implements IAreaDAO {
 		
 	}
 	
-	private void insertAreaPostcodes(int id,Set<PostcodeTO> postcodes,Connection conn) throws SQLException {
+	private void insertAreaPostcodes(int id,Set<MapAreaTO> postcodes,Connection conn) throws SQLException {
 		
 		String sqlInsertAreaPC="insert into tbl_area_postcodes(area_id,postcode) values(?,?)";
 		PreparedStatement pstmnt=conn.prepareStatement(sqlInsertAreaPC);
 		
-		for(PostcodeTO pc : postcodes) {
+		for(MapAreaTO pc : postcodes) {
 			pstmnt.setInt(1, id);
-			pstmnt.setString(2, pc.getPostcode());
+			pstmnt.setString(2, pc.getName1());
 			pstmnt.executeUpdate();
 		}
 		
@@ -109,21 +109,21 @@ public class DerbyAreaDAO implements IAreaDAO {
 		
 	}
 	
-	public List<AreaTO> findAllMapAreas(int mapId) {
+	public List<CollectionTO> findCollectionsByMapId(int mapId) {
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
 		ResultSet rs=null;
 		String sqlFindAllAreas="select id,map_id,name,color_background,color_line,line_thickness,transparency "
 				+ "from tbl_area where map_id=?";
-		List<AreaTO> areas=null;
+		List<CollectionTO> areas=null;
 		
 		try {
 			pstmnt=conn.prepareStatement(sqlFindAllAreas);
 			pstmnt.setInt(1, mapId);
 			rs=pstmnt.executeQuery();
-			areas=new ArrayList<AreaTO>();
+			areas=new ArrayList<CollectionTO>();
 			while(rs.next()) {
-				AreaTO area=createArea(rs);
+				CollectionTO area=createArea(rs);
 				//TODO: use postcodeDAO to retrieve postcode data
 				//addPostcodesToArea(area,conn);
 				areas.add(area);
@@ -140,13 +140,13 @@ public class DerbyAreaDAO implements IAreaDAO {
 		return areas;
 	}
 
-	public AreaTO findAreaById(int id) {
+	public CollectionTO findCollectionById(int id) {
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
 		String sqlFindAreaById="select id,map_id,name,color_background,color_line,line_thickness,transparency "
 				+ "from tbl_area where id=?";
 		ResultSet rs=null;
-		AreaTO area=null;
+		CollectionTO area=null;
 		try {
 			pstmnt=conn.prepareStatement(sqlFindAreaById);
 			pstmnt.setInt(1, id);
@@ -174,27 +174,27 @@ public class DerbyAreaDAO implements IAreaDAO {
 		return area;
 	}
 	
-	private void addPostcodesToArea(AreaTO area,Connection conn) throws SQLException {
+	private void addPostcodesToArea(CollectionTO area,Connection conn) throws SQLException {
 		String sqlFindPostcodes="select b.postcode,b.name,b.map_id from tbl_area_postcodes a join tbl_postcode b on a.postcode=b.postcode and a.map_id=b.map_id where a.area_id=?";
 		PreparedStatement pstmnt=conn.prepareStatement(sqlFindPostcodes);
 		pstmnt.setInt(1, area.getId());
 		ResultSet rs=pstmnt.executeQuery();
-		Set<PostcodeTO> postcodes=new HashSet<PostcodeTO>();
+		Set<MapAreaTO> postcodes=new HashSet<MapAreaTO>();
 		while(rs.next()) {
 			postcodes.add(createPostcode(rs));
 		}
-		area.setPostcodes(postcodes);
+		area.setMapAreas(postcodes);
 	}
 	
-	private PostcodeTO createPostcode(ResultSet rs) throws SQLException {
-		PostcodeTO pc=new PostcodeTO();
-		pc.setPostcode(rs.getString("postcode"));
-		pc.setName(rs.getString("name"));
+	private MapAreaTO createPostcode(ResultSet rs) throws SQLException {
+		MapAreaTO pc=new MapAreaTO();
+		pc.setName1(rs.getString("postcode"));
+		pc.setName2(rs.getString("name"));
 		pc.setMapId(rs.getInt("map_id"));
 		return pc;
 	}
 	
-	public void removeArea(int id) {
+	public void removeCollection(int id) {
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
 		String sqlDeleteArea="delete from tbl_area where id=?";
@@ -219,12 +219,12 @@ public class DerbyAreaDAO implements IAreaDAO {
 		
 	}
 	
-	private AreaTO createArea(ResultSet rs) throws SQLException {
-		AreaTO area=new AreaTO();
+	private CollectionTO createArea(ResultSet rs) throws SQLException {
+		CollectionTO area=new CollectionTO();
 		area.setId(rs.getInt("id"));
 		area.setMapId(rs.getInt("map_id"));
 		area.setName(rs.getString("name"));
-		AreaStyleTO style=new AreaStyleTO();
+		CollectionStyleTO style=new CollectionStyleTO();
 		style.setBackgroundColor(Color.decode(rs.getString("color_background")));
 		style.setLineColor(Color.decode(rs.getString("color_line")));
 		style.setTransparency(rs.getDouble("line_thickness"));

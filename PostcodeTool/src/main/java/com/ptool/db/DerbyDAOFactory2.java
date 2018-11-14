@@ -7,8 +7,8 @@ import java.sql.SQLException;
 public class DerbyDAOFactory2 extends DAOFactory {
 	
 	public static final String DRIVER="org.apache.derby.jdbc.EmbeddedDriver";
-	//public static final String DB_URL="C:/Users/ville.susi/git/PostcodeTool/PostcodeTool/MapToolDB";
-	public static final String DB_URL="C:/Users/ghost/git/PostcodeTool/PostcodeTool/MapToolDB";
+	public static final String DB_URL="C:/Users/ville.susi/git/PostcodeTool/PostcodeTool/MapToolDB";
+	//public static final String DB_URL="C:/Users/ghost/git/PostcodeTool/PostcodeTool/MapToolDB";
 	
 	
 	public DerbyDAOFactory2() {
@@ -52,13 +52,13 @@ public class DerbyDAOFactory2 extends DAOFactory {
 	}
 	
 	@Override
-	public IPostcodeDAO getPostcodeDAO() {
-		return new DerbyPostcodeDAO2();
+	public IMapAreaDAO getMapAreaDAO() {
+		return new DerbyMapAreaDAO();
 	}
 
 	@Override
-	public IAreaDAO getAreaDAO() {
-		return new DerbyAreaDAO();
+	public ICollectionDAO getCollectionDAO() {
+		return new DerbyCollectionDAO();
 	}
 
 	@Override

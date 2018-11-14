@@ -31,14 +31,14 @@ public class CenterPanel extends JPanel {
 	
 	private JPanel getMapPane() {
 		if(mapPane==null) {
-			mapPane=new PostcodeMapPane(controller);
+			mapPane=new MTMapPane(controller);
 		}
 		return mapPane;
 	}
 	
 	private JPanel getAreaPane() {
 		if(areaPane==null) {
-			areaPane=new AreaPane(controller);
+			areaPane=new CollectionPane(controller);
 		}
 		return areaPane;
 	}

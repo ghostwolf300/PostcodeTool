@@ -1,72 +1,70 @@
 package com.ptool.controller;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
-import com.ptool.pojo.AreaTO;
-import com.ptool.pojo.PostcodeTO;
-import com.ptool.service.PToolService;
+import com.ptool.pojo.CollectionTO;
+import com.ptool.pojo.MapAreaTO;
+import com.ptool.service.MTService;
 
 public class DefaultController extends AbstractController {
 	
-	private PToolService service=null;
+	private MTService service=null;
 	
 	public DefaultController() {
 		super();
-		service=new PToolService();
+		service=new MTService();
 		this.addModel(service.getMapModel());
-		this.addModel(service.getPostcodeModel());
-		this.addModel(service.getAreaModel());
+		this.addModel(service.getMapAreaModel());
+		this.addModel(service.getCollectionModel());
 	}
 	
 	public void loadMap() {
-		service.loadMap(101);
+		service.loadMap(2);
 	}
 	
 	public void loadPostcodes() {
-		service.loadPostcodes(101);
+		service.loadMapAreas(2);
 	}
 	
 	public void loadAreas() {
-		service.loadAreas(101);
+		service.loadCollections(2);
 	}
 	
-	public void setSelectedPostcode(PostcodeTO postcode) {
-		service.selectPostcode(postcode);
+	public void selectMapArea(MapAreaTO postcode) {
+		service.selecteMapArea(postcode);
 	}
 	
-	public void setSelectedPostcodes(Set<PostcodeTO> pcSet) {
-		service.selectPostcodes(pcSet);
+	public void selectMapAreas(Set<MapAreaTO> pcSet) {
+		service.selectMapAreas(pcSet);
 	}
 	
-	public void setSelectedArea(AreaTO area) {
-		service.selectArea(area);
+	public void selectCollection(CollectionTO area) {
+		service.selectCollection(area);
 	}
 	
-	public void addPostcodesToArea() {
+	public void addMapAreasToCollection() {
 		System.out.println("Controller: addPostcodesToArea");
-		service.addPostcodesToArea();
+		service.addMapAreasToCollection();
 	}
 	
-	public void addPostcodesToArea(Set<PostcodeTO> postcodes) {
-		service.addPostcodesToArea(postcodes);
+	public void addMapAreasToCollection(Set<MapAreaTO> postcodes) {
+		service.addMapAreasToCollection(postcodes);
 	}
 	
-	public void saveArea(AreaTO area) {
+	public void saveCollection(CollectionTO area) {
 		System.out.println("Controller: saveArea");
-		service.saveArea(area);
+		service.saveCollection(area);
 	}
 	
-	public void removeArea(AreaTO area) {
-		service.removeArea(area);
+	public void removeCollection(CollectionTO area) {
+		service.removeCollection(area);
 	}
 	
-	public void showArea(AreaTO area) {
+	public void showCollection(CollectionTO area) {
 		service.showArea(area);
 	}
 	
-	public void hideArea(AreaTO area) {
+	public void hideCollection(CollectionTO area) {
 		service.hideArea(area);
 	}
 	

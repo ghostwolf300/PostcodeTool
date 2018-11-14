@@ -9,7 +9,8 @@ import org.locationtech.jts.geom.Polygon;
 
 public class PolygonTO {
 	
-	private int id;
+	private int id=-1;
+	private int mapAreaId=-1;
 	private List<RingTO> rings=null;
 	
 	public PolygonTO() {
@@ -22,6 +23,14 @@ public class PolygonTO {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getMapAreaId() {
+		return mapAreaId;
+	}
+
+	public void setMapAreaId(int mapAreaId) {
+		this.mapAreaId = mapAreaId;
 	}
 
 	public List<RingTO> getRings() {

@@ -52,12 +52,12 @@ public class DerbyDAOFactory extends DAOFactory {
 	}
 	
 	@Override
-	public IPostcodeDAO getPostcodeDAO() {
+	public IMapAreaDAO getMapAreaDAO() {
 		return new DerbyPostcodeDAO();
 	}
 
 	@Override
-	public IAreaDAO getAreaDAO() {
+	public ICollectionDAO getCollectionDAO() {
 		return new DerbyAreaDAO();
 	}
 

@@ -10,10 +10,10 @@ import java.util.List;
 
 import com.ptool.pojo.CoordinateTO;
 import com.ptool.pojo.PolygonTO;
-import com.ptool.pojo.PostcodeTO;
+import com.ptool.pojo.MapAreaTO;
 import com.ptool.pojo.RingTO;
 
-public class DerbyPostcodeDAO implements IPostcodeDAO {
+public class DerbyPostcodeDAO implements IMapAreaDAO {
 
 	public void createDB() {
 		Connection conn=DerbyDAOFactory.createConnection();
@@ -26,22 +26,22 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		}
 	}
 
-	public void savePostcodes(List<PostcodeTO> postcodes) {
+	public void saveMapAreas(List<MapAreaTO> postcodes) {
 		String sqlInsertPostCode="insert into tbl_postcode(map_id,postcode,name) values(?,?,?)";
 		PreparedStatement pstmnt=null;
 		Connection conn=DerbyDAOFactory.createConnection();
 		
 		try {
 			pstmnt=conn.prepareStatement(sqlInsertPostCode);
-			for(PostcodeTO pc : postcodes) {
+			for(MapAreaTO pc : postcodes) {
 				pstmnt.setInt(1, pc.getMapId());
-				pstmnt.setString(2, pc.getPostcode());
-				pstmnt.setString(3, pc.getName());
+				pstmnt.setString(2, pc.getName1());
+				pstmnt.setString(3, pc.getName2());
 				pstmnt.executeUpdate();
 				
 				for(PolygonTO polygon : pc.getPolygons()) {
 					savePolygon(polygon,conn);
-					savePostcodePolygon(pc.getMapId(),pc.getPostcode(),polygon.getId(),conn);
+					savePostcodePolygon(pc.getMapId(),pc.getName1(),polygon.getId(),conn);
 				}
 			}
 			
@@ -214,7 +214,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		
 	}
 
-	public PostcodeTO findPostcode(String postcode,int mapId) {
+	public MapAreaTO findMapArea(String postcode,int mapId) {
 		
 		String sqlGetPostcode="select postcode,name from tbl_postcode where postcode=? and map_id=?";
 		
@@ -222,7 +222,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		PreparedStatement pstmnt=null;
 		ResultSet rsPostcode=null;
 		
-		PostcodeTO pc=null;
+		MapAreaTO pc=null;
 		
 		try {
 			pstmnt=conn.prepareStatement(sqlGetPostcode);
@@ -230,11 +230,11 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 			pstmnt.setInt(2, mapId);
 			rsPostcode=pstmnt.executeQuery();
 			if(rsPostcode.next()) {
-				pc=new PostcodeTO();
+				pc=new MapAreaTO();
 				pc.setMapId(mapId);
-				pc.setPostcode(rsPostcode.getString("postcode"));
-				pc.setName(rsPostcode.getString("name"));
-				pc.setPolygons(getPolygons(pc.getPostcode(),mapId,conn));
+				pc.setName1(rsPostcode.getString("postcode"));
+				pc.setName2(rsPostcode.getString("name"));
+				pc.setPolygons(getPolygons(pc.getName1(),mapId,conn));
 			}
 		} 
 		catch (SQLException e) {
@@ -343,26 +343,26 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		
 	}
 
-	public List<PostcodeTO> findAllPostcodes(int mapId) {
+	public List<MapAreaTO> findAllMapAreas(int mapId) {
 		String sqlGetAllPostcodes="select map_id,postcode,name from tbl_postcode where map_id=? order by name";
 		
 		Connection conn=DerbyDAOFactory.createConnection();
 		PreparedStatement pstmnt=null;
 		ResultSet rsPostcodes=null;
 		
-		PostcodeTO pc=null;
-		List<PostcodeTO> postcodes=new ArrayList<PostcodeTO>();
+		MapAreaTO pc=null;
+		List<MapAreaTO> postcodes=new ArrayList<MapAreaTO>();
 		
 		try {
 			pstmnt=conn.prepareStatement(sqlGetAllPostcodes);
 			pstmnt.setInt(1, mapId);
 			rsPostcodes=pstmnt.executeQuery();
 			while(rsPostcodes.next()) {
-				pc=new PostcodeTO();
+				pc=new MapAreaTO();
 				pc.setMapId(mapId);
-				pc.setPostcode(rsPostcodes.getString("postcode"));
-				pc.setName(rsPostcodes.getString("name"));
-				pc.setPolygons(getPolygons(pc.getPostcode(),mapId,conn));
+				pc.setName1(rsPostcodes.getString("postcode"));
+				pc.setName2(rsPostcodes.getString("name"));
+				pc.setPolygons(getPolygons(pc.getName1(),mapId,conn));
 				postcodes.add(pc);
 			}
 		} 
@@ -384,7 +384,7 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		return postcodes;
 	}
 
-	public List<PostcodeTO> findPostcodesByAreaId(int areaId,int mapId) {
+	public List<MapAreaTO> findMapAreasByCollectionId(int areaId,int mapId) {
 		String sqlFindPostcodesByAreaId="select a.postcode,a.name from tbl_postcode a "
 				+ "join tbl_area_postcodes b on a.postcode=b.postcode and a.map_id=b.map_id where b.area_id=?";
 		
@@ -392,19 +392,19 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		PreparedStatement pstmnt=null;
 		ResultSet rsPostcodes=null;
 		
-		PostcodeTO pc=null;
-		List<PostcodeTO> postcodes=new ArrayList<PostcodeTO>();
+		MapAreaTO pc=null;
+		List<MapAreaTO> postcodes=new ArrayList<MapAreaTO>();
 		
 		try {
 			pstmnt=conn.prepareStatement(sqlFindPostcodesByAreaId);
 			pstmnt.setInt(1, areaId);
 			rsPostcodes=pstmnt.executeQuery();
 			while(rsPostcodes.next()) {
-				pc=new PostcodeTO();
+				pc=new MapAreaTO();
 				pc.setMapId(mapId);
-				pc.setPostcode(rsPostcodes.getString("postcode"));
-				pc.setName(rsPostcodes.getString("name"));
-				pc.setPolygons(getPolygons(pc.getPostcode(),mapId,conn));
+				pc.setName1(rsPostcodes.getString("postcode"));
+				pc.setName2(rsPostcodes.getString("name"));
+				pc.setPolygons(getPolygons(pc.getName1(),mapId,conn));
 				postcodes.add(pc);
 			}
 		} 
@@ -425,6 +425,16 @@ public class DerbyPostcodeDAO implements IPostcodeDAO {
 		
 		
 		return postcodes;
+	}
+
+	public MapAreaTO findMapArea(int id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<MapAreaTO> findMapAreasByCollectionId(int collectionId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

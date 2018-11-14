@@ -12,7 +12,8 @@ public class RingTO {
 	public static final int TYPE_OUTER=1;
 	public static final int TYPE_INNER=2;
 	
-	private int id;
+	private int id=-1;
+	private int polygonId=-1;
 	private int ringType;
 	private List<CoordinateTO> coordinates=null;
 	
@@ -35,6 +36,14 @@ public class RingTO {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public int getPolygonId() {
+		return polygonId;
+	}
+
+	public void setPolygonId(int polygonId) {
+		this.polygonId = polygonId;
 	}
 
 	public int getRingType() {

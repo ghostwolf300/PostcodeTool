@@ -20,7 +20,7 @@ import com.ptool.geo.GeometryCollection;
 import com.ptool.geo.GeometryObject;
 
 import com.ptool.geo.Position;
-import com.ptool.pojo.PostcodeTO;
+import com.ptool.pojo.MapAreaTO;
 import com.ptool.pojo.RingTO;
 import com.ptool.pojo.CoordinateTO;
 import com.ptool.pojo.PolygonTO;
@@ -342,10 +342,10 @@ public class KMLUtil {
 		
 	}
 	
-	public void addPostcode(PostcodeTO postcode) {
+	public void addPostcode(MapAreaTO postcode) {
 		Element folder=kmlDoc.getRootElement().getChild("Document");
 		for(PolygonTO polygon : postcode.getPolygons()) {
-			folder.addContent(getPlacemarkElement(postcode.getName(),polygon));
+			folder.addContent(getPlacemarkElement(postcode.getName2(),polygon));
 		}
 		
 	}

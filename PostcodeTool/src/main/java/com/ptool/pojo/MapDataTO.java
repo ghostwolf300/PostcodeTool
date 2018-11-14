@@ -69,6 +69,15 @@ public class MapDataTO {
 	public void setCrs(String crs) {
 		this.crs = crs;
 	}
+	
+	public boolean isNew() {
+		if(id==-1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
 	@Override
 	public String toString() {

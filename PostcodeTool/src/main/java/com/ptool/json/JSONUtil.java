@@ -14,7 +14,7 @@ import org.json.simple.parser.ParseException;
 
 import com.ptool.pojo.CoordinateTO;
 import com.ptool.pojo.PolygonTO;
-import com.ptool.pojo.PostcodeTO;
+import com.ptool.pojo.MapAreaTO;
 import com.ptool.pojo.RingTO;
 
 public class JSONUtil {
@@ -32,8 +32,8 @@ public class JSONUtil {
 		return instance;
 	}
 	
-	public List<PostcodeTO> convert(JSONObject json){
-		List<PostcodeTO> postcodes=new ArrayList<PostcodeTO>();
+	public List<MapAreaTO> convert(JSONObject json){
+		List<MapAreaTO> postcodes=new ArrayList<MapAreaTO>();
 		JSONArray postcodeArray=(JSONArray) json.get("features");
 		
 		for(Object obj : postcodeArray) {
@@ -96,11 +96,11 @@ public class JSONUtil {
 		return json;
 	}
 	
-	private PostcodeTO toPostcode(JSONObject json) {
+	private MapAreaTO toPostcode(JSONObject json) {
 		JSONObject prop=(JSONObject) json.get("properties");
-		PostcodeTO postcode=new PostcodeTO();
-		postcode.setPostcode((String)prop.get("posti_alue"));
-		postcode.setName((String)prop.get("nimi"));
+		MapAreaTO postcode=new MapAreaTO();
+		postcode.setName1((String)prop.get("posti_alue"));
+		postcode.setName2((String)prop.get("nimi"));
 		JSONObject jsonGeom=(JSONObject) json.get("geometry");
 		JSONArray jsonCoordinates=(JSONArray) jsonGeom.get("coordinates");
 		
