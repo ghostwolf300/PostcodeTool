@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.ptool.pojo.CollectionTO;
 import com.ptool.pojo.MapAreaTO;
+import com.ptool.pojo.MapDataTO;
 import com.ptool.service.MTService;
 
 public class DefaultController extends AbstractController {
@@ -20,6 +21,17 @@ public class DefaultController extends AbstractController {
 	
 	public void loadMap() {
 		service.loadMap(2);
+	}
+	
+	public void loadMaps() {
+		service.loadMaps();
+	}
+	
+	public void showMap(MapDataTO map) {
+		
+		service.loadMap(map.getId());
+		service.loadMapAreas(map.getId());
+		service.loadCollections(map.getId());
 	}
 	
 	public void loadPostcodes() {
@@ -61,11 +73,11 @@ public class DefaultController extends AbstractController {
 	}
 	
 	public void showCollection(CollectionTO area) {
-		service.showArea(area);
+		service.showCollection(area);
 	}
 	
 	public void hideCollection(CollectionTO area) {
-		service.hideArea(area);
+		service.hideCollection(area);
 	}
 	
 }

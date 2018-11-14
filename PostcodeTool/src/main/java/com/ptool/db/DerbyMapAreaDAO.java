@@ -266,7 +266,7 @@ public class DerbyMapAreaDAO implements IMapAreaDAO {
 	}
 
 	public List<MapAreaTO> findMapAreasByCollectionId(int collectionId) {
-		String sqlFindPostcodesByAreaId="select a.id,a.name_1,a.name_2,a.name_3,a.name_4 from tbl_area a "
+		String sqlFindPostcodesByAreaId="select a.id,a.map_id,a.name_1,a.name_2,a.name_3,a.name_4 from tbl_area a "
 				+ "join tbl_collection_areas b on a.id=b.area_id where b.collection_id=?";
 		
 		Connection conn=DerbyDAOFactory2.createConnection();

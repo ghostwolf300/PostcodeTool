@@ -45,9 +45,9 @@ public class MapTool {
 		//tool.createPostcodeMap(2);
 		DefaultController controller=new DefaultController();
 		MTFrame gui=new MTFrame(controller);
-		controller.loadMap();
+		/*controller.loadMap();
 		controller.loadPostcodes();
-		controller.loadAreas();
+		controller.loadAreas();*/
 		gui.setVisible(true);
 		
 
@@ -123,7 +123,7 @@ public class MapTool {
 		IMapAreaDAO pcDao=DAOFactory.getDAOFactory(DAOFactory.DERBY1).getMapAreaDAO();
 		ICollectionDAO areaDao=DAOFactory.getDAOFactory(DAOFactory.DERBY1).getCollectionDAO();
 		CollectionTO area=areaDao.findCollectionById(areaId);
-		List<MapAreaTO> postcodes=pcDao.findMapAreasByCollectionId(areaId,1);
+		List<MapAreaTO> postcodes=pcDao.findMapAreasByCollectionId(area.getId());
 		KMLUtil util=KMLUtil.getInstance();
 		util.createKMLDocument(area.getName());
 		for(MapAreaTO pc : postcodes) {

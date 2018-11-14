@@ -332,7 +332,7 @@ public class CollectionPane extends JPanel implements IView,ActionListener,Chang
 	
 	@SuppressWarnings("unchecked")
 	public void modelPropertyChange(PropertyChangeEvent pce) {
-		if(pce.getPropertyName().equals(CollectionModel.P_POSTCODES)) {
+		if(pce.getPropertyName().equals(CollectionModel.P_MAP_AREAS)) {
 			Set<MapAreaTO> postcodes=(Set<MapAreaTO>) pce.getNewValue();
 			MapAreaListModel model=(MapAreaListModel) list.getModel();
 			model.setPostcodes(new ArrayList<MapAreaTO>(postcodes));

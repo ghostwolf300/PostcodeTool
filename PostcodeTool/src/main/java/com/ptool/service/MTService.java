@@ -59,6 +59,11 @@ public class MTService {
 	public void setMapModel(MapModel mapModel) {
 		this.mapModel = mapModel;
 	}
+	
+	public void loadMaps() {
+		List<MapDataTO> maps=mapDAO.findAllMaps();
+		mapModel.setMaps(maps);
+	}
 
 	public void loadMap(int id) {
 		MapDataTO mapData=mapDAO.findMapById(id);
@@ -71,12 +76,12 @@ public class MTService {
 	}
 	
 	public void loadCollections(int mapId) {
-		List<CollectionTO> areas=collectionDAO.findCollectionsByMapId(mapId);
-		for(CollectionTO area : areas) {
-			List<MapAreaTO> postcodes=mapAreaDAO.findMapAreasByCollectionId(area.getId(), mapId);
-			area.setMapAreas(new HashSet<MapAreaTO>(postcodes));
+		List<CollectionTO> collections=collectionDAO.findCollectionsByMapId(mapId);
+		for(CollectionTO coll : collections) {
+			List<MapAreaTO> mapAreas=mapAreaDAO.findMapAreasByCollectionId(coll.getId());
+			coll.setMapAreas(new HashSet<MapAreaTO>(mapAreas));
 		}
-		collectionModel.setCollections(areas);
+		collectionModel.setCollections(collections);
 	}
 	
 	public void selecteMapArea(MapAreaTO postcode) {
@@ -154,11 +159,11 @@ public class MTService {
 		
 	}
 	
-	public void showArea(CollectionTO collection) {
+	public void showCollection(CollectionTO collection) {
 		collectionModel.showCollection(collection);
 	}
 	
-	public void hideArea(CollectionTO collection) {
+	public void hideCollection(CollectionTO collection) {
 		collectionModel.hideCollection(collection);
 	}
 	

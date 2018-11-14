@@ -37,6 +37,7 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.FeatureTypeStyle;
 import org.geotools.styling.Fill;
 import org.geotools.styling.Rule;
+import org.geotools.styling.SLD;
 import org.geotools.styling.Stroke;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactory;
@@ -168,7 +169,6 @@ public class MTMapPane extends JMapPane implements IView,MapMouseListener,Action
 	private void updateMapContent(List<MapAreaTO> postcodes) {
 		
 		postcodeLayer=getPostcodeLayer(postcodes);
-		//map.layers().add(1, postcodeLayer);
 		map.addLayer(postcodeLayer);
 		
 	}
@@ -462,13 +462,13 @@ public class MTMapPane extends JMapPane implements IView,MapMouseListener,Action
 			highlightSelected((Set<MapAreaTO>)pce.getNewValue());
 		}
 		else if(pce.getPropertyName().equals(CollectionModel.P_DISPLAYED_COLLECTIONS)) {
-			//Set<AreaTO> areas=(Set<AreaTO>) pce.getNewValue();
-			//showAreas(areas);
+			Set<CollectionTO> collSet=(Set<CollectionTO>) pce.getNewValue();
+			showAreas(collSet);
 		}
 		else if(pce.getPropertyName().equals(CollectionModel.P_COLLECTIONS)) {
-			List<CollectionTO> areas=(List<CollectionTO>) pce.getNewValue();
-			Set<CollectionTO> areaSet=new HashSet<CollectionTO>(areas);
-			showAreas(areaSet);
+			/*List<CollectionTO> collList=(List<CollectionTO>) pce.getNewValue();
+			Set<CollectionTO> collSet=new HashSet<CollectionTO>(collList);
+			showAreas(collSet);*/
 		}
 		
 	}

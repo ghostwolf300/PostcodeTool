@@ -110,7 +110,7 @@ public class CollectionListPane extends JPanel implements IView,TableModelListen
 		if(pce.getPropertyName().equals(CollectionModel.P_COLLECTIONS)) {
 			List<CollectionTO> areas=(List<CollectionTO>) pce.getNewValue();
 			System.out.println("showing areas: "+areas.size());
-			((CollectionListTableModel)table.getModel()).setAreas(areas);
+			((CollectionListTableModel)table.getModel()).setCollections(areas);
 		}
 		else if(pce.getPropertyName().equals(CollectionModel.P_SELECTED)) {
 			//AreaTO area=(AreaTO) pce.getNewValue();
@@ -121,12 +121,12 @@ public class CollectionListPane extends JPanel implements IView,TableModelListen
 
 	public void tableChanged(TableModelEvent e) {
 		if(e.getColumn()==0) {
-			CollectionTO area=((CollectionListTableModel)e.getSource()).getAreaAtRow(e.getLastRow());
-			if(area.isSelected()) {
-				controller.showCollection(area);
+			CollectionTO coll=((CollectionListTableModel)e.getSource()).getAreaAtRow(e.getLastRow());
+			if(coll.isSelected()) {
+				controller.showCollection(coll);
 			}
 			else {
-				controller.hideCollection(area);
+				controller.hideCollection(coll);
 			}
 		}
 	}
@@ -135,8 +135,8 @@ public class CollectionListPane extends JPanel implements IView,TableModelListen
 		if(!e.getValueIsAdjusting()) {
 			int row=table.getSelectedRow();
 			if(row!=-1) {
-				CollectionTO area=((CollectionListTableModel)table.getModel()).getAreaAtRow(row);
-				controller.selectCollection(area);
+				CollectionTO coll=((CollectionListTableModel)table.getModel()).getAreaAtRow(row);
+				controller.selectCollection(coll);
 			}
 		}
 		

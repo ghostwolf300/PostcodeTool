@@ -12,7 +12,7 @@ public class CollectionModel extends AbstractModel {
 	
 	public static final String P_COLLECTIONS="p_areas";
 	public static final String P_SELECTED="p_selected_area";
-	public static final String P_POSTCODES="p_area_postcodes";
+	public static final String P_MAP_AREAS="p_area_postcodes";
 	public static final String P_DISPLAYED_COLLECTIONS="p_displayed_areas";
 	
 	private List<CollectionTO> collections=null;
@@ -72,7 +72,7 @@ public class CollectionModel extends AbstractModel {
 	public void addMapArea(MapAreaTO postcode) {
 		if(selectedCollection!=null) {
 			selectedCollection.addMapArea(postcode);
-			this.firePropertyChange(CollectionModel.P_POSTCODES, null, selectedCollection.getMapAreas());
+			this.firePropertyChange(CollectionModel.P_MAP_AREAS, null, selectedCollection.getMapAreas());
 		}
 	}
 	
@@ -80,14 +80,14 @@ public class CollectionModel extends AbstractModel {
 		if(selectedCollection!=null) {
 			selectedCollection.addMapAreas(postcodes);
 			System.out.println("CollectionModel selected postcodes: "+selectedCollection.getMapAreas().size());
-			this.firePropertyChange(CollectionModel.P_POSTCODES, null, selectedCollection.getMapAreas());
+			this.firePropertyChange(CollectionModel.P_MAP_AREAS, null, selectedCollection.getMapAreas());
 		}
 	}
 	
 	public void removeMapArea(MapAreaTO postcode) {
 		if(selectedCollection!=null && selectedCollection.getMapAreas()!=null) {
 			selectedCollection.getMapAreas().remove(postcode);
-			this.firePropertyChange(CollectionModel.P_POSTCODES, null, selectedCollection.getMapAreas());
+			this.firePropertyChange(CollectionModel.P_MAP_AREAS, null, selectedCollection.getMapAreas());
 		}
 	}
 	

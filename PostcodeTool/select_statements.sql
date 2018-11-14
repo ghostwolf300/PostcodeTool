@@ -45,4 +45,5 @@ select a.postcode,a.name from tbl_postcode a
 join tbl_area_postcodes b on a.postcode=b.postcode and a.map_id=b.map_id where b.area_id=302;
 
 select count(*) from tbl_coordinates;
+select * from TBL_COLLECTION;
 

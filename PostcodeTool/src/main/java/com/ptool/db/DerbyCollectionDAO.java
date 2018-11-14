@@ -126,9 +126,9 @@ public class DerbyCollectionDAO implements ICollectionDAO {
 			rs=pstmnt.executeQuery();
 			collections=new ArrayList<CollectionTO>();
 			while(rs.next()) {
-				CollectionTO area=createCollection(rs);
+				CollectionTO coll=createCollection(rs);
 				//Use postcodeDAO to retrieve postcode data
-				collections.add(area);
+				collections.add(coll);
 			}
 		} 
 		catch (SQLException e) {
@@ -192,7 +192,7 @@ public class DerbyCollectionDAO implements ICollectionDAO {
 		CollectionStyleTO style=new CollectionStyleTO();
 		style.setBackgroundColor(Color.decode(rs.getString("color_background")));
 		style.setLineColor(Color.decode(rs.getString("color_line")));
-		style.setTransparency(rs.getDouble("line_thickness"));
+		style.setTransparency(rs.getDouble("transparency"));
 		style.setLineThickness(rs.getDouble("line_thickness"));
 		collection.setStyle(style);
 		return collection;

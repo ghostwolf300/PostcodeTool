@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ptool.pojo.MapDataTO;
 
@@ -47,6 +49,39 @@ public class DerbyMapDAO implements IMapDAO {
 		return mapData;
 	}
 	
+	public List<MapDataTO> findAllMaps() {
+		String sqlFindAllMaps="select id,name,min_x,min_y,max_x,max_y,crs from tbl_map order by name";
+		Connection conn=DerbyDAOFactory2.createConnection();
+		PreparedStatement pstmnt=null;
+		ResultSet rs=null;
+		List<MapDataTO> maps=new ArrayList<MapDataTO>();
+		
+		try {
+			pstmnt=conn.prepareStatement(sqlFindAllMaps);
+			rs=pstmnt.executeQuery();
+			while(rs.next()) {
+				maps.add(createMapData(rs));
+			}
+		} 
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				rs.close();
+				pstmnt.close();
+				conn.close();
+			} 
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return maps;
+	}
+
 	private MapDataTO createMapData(ResultSet rs) throws SQLException {
 		MapDataTO mapData=new MapDataTO();
 		mapData.setId(rs.getInt("id"));

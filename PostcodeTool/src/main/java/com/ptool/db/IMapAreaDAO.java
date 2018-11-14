@@ -12,7 +12,6 @@ public interface IMapAreaDAO {
 	public MapAreaTO findMapArea(String postcode,int mapId);
 	public MapAreaTO findMapArea(int id);
 	public List<MapAreaTO> findAllMapAreas(int mapId);
-	public List<MapAreaTO> findMapAreasByCollectionId(int areaId,int mapId);
 	public List<MapAreaTO> findMapAreasByCollectionId(int collectionId);
 	
 	

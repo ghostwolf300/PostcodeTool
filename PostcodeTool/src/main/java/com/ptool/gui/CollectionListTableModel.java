@@ -20,18 +20,18 @@ public class CollectionListTableModel extends AbstractTableModel {
 	public static final int COL_NAME=1;
 	public static final int COL_STYLE=2;
 	
-	private List<CollectionTO> areas=null;
+	private List<CollectionTO> collections=null;
 	
 	public CollectionListTableModel() {
 		super();
 	}
 	
 	public int getRowCount() {
-		if(areas==null) {
+		if(collections==null) {
 			return 0;
 		}
 		else {
-			return areas.size();
+			return collections.size();
 		}
 	}
 
@@ -40,11 +40,11 @@ public class CollectionListTableModel extends AbstractTableModel {
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if(areas==null) {
+		if(collections==null) {
 			return null;
 		}
 		else {
-			CollectionTO area=areas.get(rowIndex);
+			CollectionTO area=collections.get(rowIndex);
 			switch(columnIndex) {
 				case COL_SHOW :
 					return area.isSelected();
@@ -61,7 +61,7 @@ public class CollectionListTableModel extends AbstractTableModel {
 	public void setValueAt(Object value,int row,int col) {
 		if(col==COL_SHOW) {
 			boolean show=(Boolean) value;
-			areas.get(row).setSelected(show);
+			collections.get(row).setSelected(show);
 			this.fireTableCellUpdated(row, col);
 		}
 	}
@@ -75,33 +75,33 @@ public class CollectionListTableModel extends AbstractTableModel {
 		}
 	}
 	
-	public List<CollectionTO> getAreas() {
-		return areas;
+	public List<CollectionTO> getCollections() {
+		return collections;
 	}
 
-	public void setAreas(List<CollectionTO> areas) { 
-		this.areas = areas;
+	public void setCollections(List<CollectionTO> areas) { 
+		this.collections = areas;
 		this.fireTableDataChanged();
 	}
 	
 	public void addArea(CollectionTO area) {
-		if(areas==null) {
-			areas=new ArrayList<CollectionTO>();
+		if(collections==null) {
+			collections=new ArrayList<CollectionTO>();
 		}
-		areas.add(area);
+		collections.add(area);
 		this.fireTableDataChanged();
 	}
 	
 	public void removeArea(CollectionTO area) {
-		if(areas!=null) {
-			areas.remove(area);
+		if(collections!=null) {
+			collections.remove(area);
 			this.fireTableDataChanged();
 		}
 	}
 	
 	public CollectionTO getAreaAtRow(int row) {
-		if(areas!=null) {
-			return areas.get(row);
+		if(collections!=null) {
+			return collections.get(row);
 		}
 		else {
 			return null;

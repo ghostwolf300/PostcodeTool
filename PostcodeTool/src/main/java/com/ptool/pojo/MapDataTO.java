@@ -81,7 +81,6 @@ public class MapDataTO {
 
 	@Override
 	public String toString() {
-		return "MapDataTO [id=" + id + ", name=" + name + ", minX=" + minX + ", minY=" + minY + ", maxX=" + maxX
-				+ ", maxY=" + maxY + ", crs=" + crs + "]";
+		return name+" "+crs;
 	}
 }
