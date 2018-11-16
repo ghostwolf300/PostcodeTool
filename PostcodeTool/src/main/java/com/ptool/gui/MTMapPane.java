@@ -67,6 +67,7 @@ import com.ptool.model.MapAreaModel;
 import com.ptool.pojo.CollectionStyleTO;
 import com.ptool.pojo.CollectionTO;
 import com.ptool.pojo.MapDataTO;
+import com.ptool.pojo.MapImageParametersTO;
 import com.ptool.pojo.PolygonTO;
 import com.ptool.pojo.MapAreaTO;
 
@@ -457,6 +458,7 @@ public class MTMapPane extends JMapPane implements IView,MapMouseListener,Action
 		else if(pce.getPropertyName().equals(MapAreaModel.P_MAP_AREAS)) {
 			System.out.println("received postcodes...");
 			updateMapContent((List<MapAreaTO>) pce.getNewValue());
+			
 		}
 		else if(pce.getPropertyName().equals(MapAreaModel.P_SELECTED)) {
 			highlightSelected((Set<MapAreaTO>)pce.getNewValue());
@@ -470,6 +472,27 @@ public class MTMapPane extends JMapPane implements IView,MapMouseListener,Action
 			Set<CollectionTO> collSet=new HashSet<CollectionTO>(collList);
 			showAreas(collSet);*/
 		}
+		
+	}
+	
+	private void screenMapSize() {
+		//ReferencedEnvelope displayArea=this.getDisplayArea();
+		ReferencedEnvelope displayArea=this.getMapContent().getMaxBounds();
+		
+		AffineTransform at=this.getMapContent().getViewport().getWorldToScreen();
+		double minX=displayArea.getMinX();
+		double minY=displayArea.getMinY();
+		double maxX=displayArea.getMaxX();
+		double maxY=displayArea.getMaxY();
+		double w=maxX-minX;
+		double h=maxY-minY;
+		Rectangle2D.Double worldRect=new Rectangle2D.Double(minX,minY,w,h);
+		Rectangle2D screenRect=at.createTransformedShape(worldRect).getBounds2D();
+		int width=(int) screenRect.getWidth();
+		int height=(int) screenRect.getHeight();
+		System.out.println(width + " "+height);
+		MapImageParametersTO imgParams=new MapImageParametersTO(minX,minY,maxX,maxY,width,height,MapImageParametersTO.CRS_EPSG_3067);
+		controller.loadMapImage(imgParams);
 		
 	}
 
@@ -505,6 +528,7 @@ public class MTMapPane extends JMapPane implements IView,MapMouseListener,Action
 	public void onMouseReleased(MapMouseEvent ev) {
 		if(ev.isPopupTrigger()) {
 			popup.show(ev.getComponent(), ev.getX(), ev.getY());
+			screenMapSize();
 		}
 		
 	}

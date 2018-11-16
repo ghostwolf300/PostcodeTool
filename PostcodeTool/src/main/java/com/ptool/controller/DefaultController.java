@@ -5,6 +5,7 @@ import java.util.Set;
 import com.ptool.pojo.CollectionTO;
 import com.ptool.pojo.MapAreaTO;
 import com.ptool.pojo.MapDataTO;
+import com.ptool.pojo.MapImageParametersTO;
 import com.ptool.service.MTService;
 
 public class DefaultController extends AbstractController {
@@ -78,6 +79,10 @@ public class DefaultController extends AbstractController {
 	
 	public void hideCollection(CollectionTO area) {
 		service.hideCollection(area);
+	}
+	
+	public void loadMapImage(MapImageParametersTO params) {
+		service.loadMapImage(params);
 	}
 	
 }

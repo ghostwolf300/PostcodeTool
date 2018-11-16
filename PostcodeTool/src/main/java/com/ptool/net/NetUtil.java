@@ -1,5 +1,6 @@
 package com.ptool.net;
 
+import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;

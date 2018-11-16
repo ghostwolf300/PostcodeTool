@@ -1,8 +1,14 @@
 package com.ptool.service;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.imageio.ImageIO;
 
 import com.ptool.db.DAOFactory;
 import com.ptool.db.ICollectionDAO;
@@ -10,10 +16,12 @@ import com.ptool.db.IMapDAO;
 import com.ptool.db.IMapAreaDAO;
 import com.ptool.model.CollectionModel;
 import com.ptool.model.MapModel;
+import com.ptool.net.WMSService;
 import com.ptool.model.MapAreaModel;
 import com.ptool.pojo.CollectionStyleTO;
 import com.ptool.pojo.CollectionTO;
 import com.ptool.pojo.MapDataTO;
+import com.ptool.pojo.MapImageParametersTO;
 import com.ptool.pojo.MapAreaTO;
 
 public class MTService {
@@ -25,6 +33,8 @@ public class MTService {
 	private IMapDAO mapDAO=null;
 	private IMapAreaDAO mapAreaDAO=null;
 	private ICollectionDAO collectionDAO=null;
+	
+	private WMSService wms=null;
 	
 	public MTService() {
 		mapModel=new MapModel();
@@ -165,6 +175,30 @@ public class MTService {
 	
 	public void hideCollection(CollectionTO collection) {
 		collectionModel.hideCollection(collection);
+	}
+	
+	public void loadMapImage(MapImageParametersTO params) {
+		mapModel.setImgParams(params);
+		if(wms==null) {
+			wms=new WMSService(this);
+			wms.requestMapImage(params);
+			Thread t=new Thread(wms);
+			System.out.println("Starting thread");
+			t.start();
+		}
+		
+	}
+	
+	public synchronized void setMapImage(BufferedImage img) {
+		mapModel.setMapImage(img);
+		File outputFile=new File("img/map_test.png");
+		try {
+			ImageIO.write(img, "png", outputFile);
+		} 
+		catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }
